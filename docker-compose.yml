@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: homeserve_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: homeserve_saas
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docs/phase3/02_MySQL_Schema_DDL.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: homeserve_backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      ENVIRONMENT: production
+      DEBUG: "False"
+      DATABASE_URL: "mysql+pymysql://root:rootpassword@mysql:3306/homeserve_saas"
+      ALLOWED_ORIGINS: "http://localhost:5173,https://homeserve-saas.netlify.app"
+    ports:
+      - "8000:8000"
+
+volumes:
+  mysql_data:
+
