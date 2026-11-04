@@ -164,11 +164,10 @@ export function LoginPage() {
                       key={cred.role}
                       type="button"
                       onClick={() => handleRoleTabSelect(cred)}
-                      className={`flex items-center justify-between rounded-xl border px-3 py-2 text-left text-xs font-semibold transition ${
-                        isActive
+                      className={`flex items-center justify-between rounded-xl border px-3 py-2 text-left text-xs font-semibold transition ${isActive
                           ? 'border-brand-600 bg-brand-50 text-brand-700 ring-2 ring-brand-500/20'
                           : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                      }`}
+                        }`}
                     >
                       <span>{ROLE_LABELS[cred.role]}</span>
                       {isActive && <CheckCircle2 className="h-3.5 w-3.5 text-brand-600 shrink-0" />}
@@ -288,11 +287,10 @@ export function LoginPage() {
                 return (
                   <div
                     key={cred.role}
-                    className={`rounded-2xl border p-4 transition flex flex-col justify-between ${
-                      isSelected
+                    className={`rounded-2xl border p-4 transition flex flex-col justify-between ${isSelected
                         ? 'border-brand-500 bg-brand-50/40 ring-2 ring-brand-500/15'
                         : 'border-slate-200 bg-white hover:border-slate-300'
-                    }`}
+                      }`}
                   >
                     <div>
                       <div className="flex items-center justify-between gap-2">
@@ -683,11 +681,10 @@ export function ProviderRegisterPage() {
                     type="button"
                     key={cat.id}
                     onClick={() => toggleCategory(cat.id)}
-                    className={`rounded-xl border p-2.5 text-left text-xs font-semibold transition ${
-                      selected
+                    className={`rounded-xl border p-2.5 text-left text-xs font-semibold transition ${selected
                         ? 'border-brand-600 bg-brand-50 text-brand-700'
                         : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                    }`}
+                      }`}
                   >
                     {cat.name}
                   </button>

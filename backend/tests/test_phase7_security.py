@@ -274,6 +274,34 @@ def test_razorpay_webhook_hmac_verification_and_idempotency(sec_env):
     assert res_valid.status_code == 200
     assert res_valid.json()["status"] == "acknowledged"
 
+    # 4. Payment failure webhook scenario (`payment.failed`) -> 200 & marks booking Failed
+    failed_body = json.dumps(
+        {
+            "event": "payment.failed",
+            "payload": {
+                "payment": {
+                    "entity": {
+                        "id": "pay_RzpWebhook_Fail_901",
+                        "order_id": "order_Pg10aBcD22mNpQ",
+                        "error_description": "Payment declined by issuing bank",
+                    }
+                }
+            },
+        }
+    ).encode("utf-8")
+    failed_sig = hmac.new(
+        settings.RAZORPAY_WEBHOOK_SECRET.encode("utf-8"),
+        failed_body,
+        hashlib.sha256,
+    ).hexdigest()
+    res_failed = client.post(
+        "/api/v1/payments/webhook",
+        content=failed_body,
+        headers={"X-Razorpay-Signature": failed_sig},
+    )
+    assert res_failed.status_code == 200
+    assert res_failed.json()["event"] == "payment.failed"
+
 
 def test_http_security_headers(sec_env):
     client, _ = sec_env

@@ -1539,14 +1539,16 @@ async def razorpay_webhook_handler(
 
     payload = json.loads(raw_body.decode("utf-8"))
     event_type = payload.get("event")
-    order_id = payload.get("payload", {}).get("payment", {}).get("entity", {}).get("order_id")
-    payment_id = payload.get("payload", {}).get("payment", {}).get("entity", {}).get("id")
+    payment_entity = payload.get("payload", {}).get("payment", {}).get("entity", {})
+    order_id = payment_entity.get("order_id")
+    payment_id = payment_entity.get("id")
+    error_reason = payment_entity.get("error_description") or "Payment declined by issuing bank"
 
     if event_type == "payment.captured" and order_id:
         payment = db.query(Payment).filter(Payment.razorpay_order_id == order_id).first()
         if payment:
             if payment.status == "Paid":
-                return {"status": "acknowledged", "idempotent": True}
+                return {"status": "acknowledged", "idempotent": True, "event": event_type}
             payment.status = "Paid"
             payment.razorpay_payment_id = payment_id or payment.razorpay_payment_id
             if payment.booking:
@@ -1556,8 +1558,31 @@ async def razorpay_webhook_handler(
                 if payment.booking.invoice:
                     payment.booking.invoice.status = "Paid"
             db.commit()
+    elif event_type == "payment.failed" and order_id:
+        payment = db.query(Payment).filter(Payment.razorpay_order_id == order_id).first()
+        if payment:
+            payment.status = "Failed"
+            payment.razorpay_payment_id = payment_id or payment.razorpay_payment_id
+            if payment.booking:
+                payment.booking.payment_status = "Failed"
+                payment.booking.paid_amount = Decimal("0.00")
+                payment.booking.pending_amount = payment.booking.total_amount
+                if payment.booking.invoice:
+                    payment.booking.invoice.status = "Payment Failed"
+                if payment.booking.customer and payment.booking.customer.user_id:
+                    db.add(
+                        Notification(
+                            user_id=payment.booking.customer.user_id,
+                            role="customer",
+                            title=f"Payment Failed — {payment.booking.booking_number}",
+                            message=f"Razorpay webhook reported payment failure ({error_reason}). Please retry payment from your booking page.",
+                            notification_type="PAYMENT_RECEIPT",
+                            reference_id=payment.booking.id,
+                        )
+                    )
+            db.commit()
 
-    return {"status": "acknowledged", "event": event_type}
+    return {"status": "acknowledged", "event": event_type, "orderId": order_id}
 
 
 # ============================================================================

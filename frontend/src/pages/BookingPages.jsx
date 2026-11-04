@@ -44,6 +44,9 @@ export function BookingCheckoutPage() {
   const [uploadedImageName, setUploadedImageName] = useState('');
   const [error, setError] = useState('');
   const [addrModalOpen, setAddrModalOpen] = useState(false);
+  const [razorpayModalOpen, setRazorpayModalOpen] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('UPI (Google Pay / PhonePe)');
+  const [rzpGatewayError, setRzpGatewayError] = useState('');
   const [newAddr, setNewAddr] = useState({
     label: 'Home',
     addressLine1: '',
@@ -110,14 +113,23 @@ export function BookingCheckoutPage() {
     setUploadedImageName(file.name);
   };
 
-  const handleConfirmBooking = async (e) => {
+  const handleConfirmBooking = (e) => {
     e.preventDefault();
     setError('');
+    setRzpGatewayError('');
     if (!problemDescription.trim() || problemDescription.trim().length < 10) {
       setError('Please describe the service requirement or problem (minimum 10 characters).');
       return;
     }
+    if (checkSlotConflict(selectedProvider.id, scheduledDate, selectedSlot.start)) {
+      setError('Selected time slot is already occupied for this provider. Please select another slot.');
+      return;
+    }
+    setRazorpayModalOpen(true);
+  };
 
+  const handleExecuteRazorpayScenario = async (scenario) => {
+    setRzpGatewayError('');
     const res = await createBooking({
       serviceId: service.id,
       providerId: selectedProvider.id,
@@ -131,12 +143,15 @@ export function BookingCheckoutPage() {
       problemImageUrls: uploadedImageName
         ? ['https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80']
         : [],
+      paymentScenario: scenario,
+      paymentMethod,
     });
 
     if (!res.success) {
-      setError(res.error);
+      setRzpGatewayError(res.error);
       return;
     }
+    setRazorpayModalOpen(false);
     navigate(`/bookings/${res.booking.id}`);
   };
 
@@ -533,6 +548,123 @@ export function BookingCheckoutPage() {
           </div>
         </div>
       </Modal>
+
+      {/* Interactive Razorpay Checkout & Webhook Simulator Modal */}
+      <Modal
+        isOpen={razorpayModalOpen}
+        onClose={() => setRazorpayModalOpen(false)}
+        title="Razorpay Sandbox Checkout & Webhook Simulator"
+      >
+        <div className="space-y-4">
+          <div className="rounded-xl bg-slate-900 p-4 text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-brand-300">
+                  Razorpay Test Gateway (HMAC-SHA256)
+                </span>
+                <h4 className="text-sm font-bold mt-0.5">HomeServe Technologies Pvt. Ltd.</h4>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] text-slate-400 block">Payable Now</span>
+                <span className="text-lg font-extrabold text-emerald-400">
+                  {formatCurrency(payableNow)}
+                </span>
+              </div>
+            </div>
+            <div className="mt-3 pt-2.5 border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-300">
+              <span>Order: order_RzpTest_{Date.now().toString().slice(-5)}</span>
+              <span>Mode: {paymentType}</span>
+            </div>
+          </div>
+
+          {rzpGatewayError && (
+            <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-semibold text-rose-700">
+              {rzpGatewayError}
+            </div>
+          )}
+
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              Select Payment Instrument
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                'UPI (GPay / PhonePe)',
+                'Credit / Debit Card',
+                'Netbanking (HDFC/ICICI)',
+              ].map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => setPaymentMethod(m)}
+                  className={`rounded-lg border p-2 text-[11px] font-semibold transition ${paymentMethod === m
+                      ? 'border-brand-600 bg-brand-50 text-brand-700'
+                      : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                    }`}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2.5 pt-2 border-t border-slate-200">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              Choose Webhook & Payment Outcome to Simulate:
+            </p>
+
+            {/* 1. Payment Success Webhook */}
+            <button
+              type="button"
+              onClick={() => handleExecuteRazorpayScenario('SUCCESS')}
+              className="w-full rounded-xl bg-emerald-600 px-4 py-3 text-left text-white shadow-xs hover:bg-emerald-700 transition flex items-center justify-between"
+            >
+              <div>
+                <span className="text-xs font-extrabold block">
+                  ✓ Simulate Payment Success (payment.captured Webhook)
+                </span>
+                <span className="text-[11px] text-emerald-100 block mt-0.5">
+                  Verifies HMAC-SHA256 X-Razorpay-Signature, marks Paid & generates GST Invoice
+                </span>
+              </div>
+              <CheckCircle2 className="h-5 w-5 shrink-0" />
+            </button>
+
+            {/* 2. Payment Failed Webhook */}
+            <button
+              type="button"
+              onClick={() => handleExecuteRazorpayScenario('FAILED')}
+              className="w-full rounded-xl border border-rose-300 bg-rose-50 px-4 py-3 text-left text-rose-900 hover:bg-rose-100 transition flex items-center justify-between"
+            >
+              <div>
+                <span className="text-xs font-extrabold block text-rose-700">
+                  ✕ Simulate Payment Failure (payment.failed Webhook)
+                </span>
+                <span className="text-[11px] text-rose-600 block mt-0.5">
+                  Simulates bank decline callback, marks booking Payment Failed & enables Retry Payment
+                </span>
+              </div>
+              <AlertTriangle className="h-5 w-5 text-rose-600 shrink-0" />
+            </button>
+
+            {/* 3. Tampered Webhook Signature */}
+            <button
+              type="button"
+              onClick={() => handleExecuteRazorpayScenario('TAMPERED_SIGNATURE')}
+              className="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-left text-slate-700 hover:bg-slate-100 transition flex items-center justify-between"
+            >
+              <div>
+                <span className="text-xs font-bold block">
+                  🛡️ Test Forged Signature Attack (Invalid X-Razorpay-Signature)
+                </span>
+                <span className="text-[11px] text-slate-500 block">
+                  Verifies backend rejects tampered HMAC-SHA256 signature with HTTP 400
+                </span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
@@ -544,6 +676,7 @@ export function BookingTrackingPage() {
     updateBookingStatus,
     rescheduleBooking,
     settleBalancePayment,
+    simulateRazorpayWebhook,
     submitReview,
     submitComplaint,
   } = usePlatform();
@@ -827,8 +960,95 @@ export function BookingTrackingPage() {
                 onClick={() => settleBalancePayment(booking.id)}
                 className="btn-primary w-full text-xs py-2.5"
               >
-                Pay Pending Balance ({formatCurrency(booking.pendingAmount)}) via Razorpay
+                {booking.paymentStatus === 'Failed'
+                  ? `Retry Failed Payment (${formatCurrency(booking.pendingAmount)}) via Razorpay`
+                  : `Pay Pending Balance (${formatCurrency(booking.pendingAmount)}) via Razorpay`}
               </button>
+            )}
+          </div>
+
+          {/* Razorpay Webhook & Signature Verification Console */}
+          <div className="card-surface p-6 space-y-4 border-slate-200">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-600 block">
+                  POST /api/v1/payments/webhook
+                </span>
+                <h3 className="text-sm font-extrabold text-slate-900">
+                  Razorpay Webhook & Signature Simulator
+                </h3>
+              </div>
+              <StatusBadge status={booking.paymentStatus} />
+            </div>
+
+            <div className="rounded-xl bg-slate-900 p-3.5 text-[11px] font-mono text-slate-300 space-y-1">
+              <div className="flex justify-between">
+                <span className="text-slate-400">Order ID:</span>
+                <span className="text-white">{booking.razorpayOrderId || `order_RzpTest_${booking.id}`}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Payment ID:</span>
+                <span className="text-emerald-400">{booking.razorpayPaymentId || `pay_RzpTest_${booking.id}`}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">HMAC Header:</span>
+                <span className="text-amber-300">X-Razorpay-Signature (SHA256)</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                Trigger Live Webhook Events:
+              </p>
+              <button
+                type="button"
+                onClick={() => simulateRazorpayWebhook(booking.id, 'SUCCESS')}
+                className="w-full rounded-xl bg-emerald-600 px-3 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition"
+              >
+                ✓ Trigger payment.captured Webhook (Mark Paid)
+              </button>
+              <button
+                type="button"
+                onClick={() => simulateRazorpayWebhook(booking.id, 'FAILED')}
+                className="w-full rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 hover:bg-rose-100 transition"
+              >
+                ✕ Trigger payment.failed Webhook (Simulate Failure)
+              </button>
+              <button
+                type="button"
+                onClick={() => simulateRazorpayWebhook(booking.id, 'TAMPERED_SIGNATURE')}
+                className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition"
+              >
+                🛡️ Send Forged Signature (Expect HTTP 400)
+              </button>
+            </div>
+
+            {booking.webhookLogs && booking.webhookLogs.length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  Recent Webhook Callback Log:
+                </p>
+                <div className="max-h-48 overflow-y-auto space-y-2">
+                  {booking.webhookLogs.map((wh) => (
+                    <div
+                      key={wh.id}
+                      className={`rounded-xl border p-2.5 text-[11px] ${wh.httpStatus === 400 || wh.event === 'payment.failed'
+                          ? 'border-rose-200 bg-rose-50/70 text-rose-900'
+                          : 'border-emerald-200 bg-emerald-50/70 text-emerald-900'
+                        }`}
+                    >
+                      <div className="flex items-center justify-between font-mono font-bold">
+                        <span>{wh.event}</span>
+                        <span>HTTP {wh.httpStatus}</span>
+                      </div>
+                      <p className="mt-1 text-[10px] leading-relaxed">{wh.reason}</p>
+                      <p className="mt-1 font-mono text-[9px] opacity-75 truncate">
+                        Sig: {wh.signature}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         </div>
