@@ -73,19 +73,30 @@ def health_check():
     return {"status": "healthy", "service": settings.APP_NAME, "version": "1.0.0"}
 
 
+@app.get("/", tags=["API Portal"])
+def api_root():
+    return {
+        "service": settings.APP_NAME,
+        "version": "1.0.0",
+        "status": "online",
+        "documentation": "/docs",
+        "redoc": "/redoc",
+        "openapi_spec": "/openapi.json",
+        "endpoints": {
+            "health": "/health",
+            "bootstrap": f"{settings.API_V1_PREFIX}/bootstrap",
+            "auth_login": f"{settings.API_V1_PREFIX}/auth/login",
+            "services": f"{settings.API_V1_PREFIX}/services",
+            "categories": f"{settings.API_V1_PREFIX}/categories",
+            "bookings": f"{settings.API_V1_PREFIX}/bookings",
+            "providers": f"{settings.API_V1_PREFIX}/providers",
+            "technicians": f"{settings.API_V1_PREFIX}/technicians",
+            "admin_analytics": f"{settings.API_V1_PREFIX}/admin/analytics"
+        }
+    }
+
+
 app.include_router(v1_router, prefix=settings.API_V1_PREFIX)
 
-# Serve bundled React SPA if static_dist exists (for full-stack Render deployment)
-_STATIC_DIR = Path(__file__).resolve().parent.parent / "static_dist"
-if _STATIC_DIR.exists() and (_STATIC_DIR / "index.html").exists():
-    if (_STATIC_DIR / "assets").exists():
-        app.mount("/assets", StaticFiles(directory=str(_STATIC_DIR / "assets")), name="assets")
-
-    @app.get("/{full_path:path}", include_in_schema=False)
-    def serve_spa(full_path: str):
-        candidate = _STATIC_DIR / full_path
-        if full_path and candidate.is_file():
-            return FileResponse(str(candidate))
-        return FileResponse(str(_STATIC_DIR / "index.html"))
 
 
