@@ -316,8 +316,8 @@ export default function AdminDashboard() {
                           setSidebarOpen(false);
                         }}
                         className={`w-full flex items-center justify-between gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold transition ${active
-                            ? 'bg-brand-600 text-white shadow-xs'
-                            : 'text-slate-400 hover:bg-slate-900 hover:text-white'
+                          ? 'bg-brand-600 text-white shadow-xs'
+                          : 'text-slate-400 hover:bg-slate-900 hover:text-white'
                           }`}
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
@@ -839,8 +839,8 @@ export default function AdminDashboard() {
                       type="button"
                       onClick={() => setProviderFilter(st)}
                       className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${providerFilter === st
-                          ? 'bg-slate-900 text-white'
-                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                        ? 'bg-slate-900 text-white'
+                        : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
                         }`}
                     >
                       {st === 'ALL' ? `All Providers (${totalProviders})` : st}
@@ -990,8 +990,8 @@ export default function AdminDashboard() {
                             type="button"
                             onClick={() => toggleCustomerStatus(c.id)}
                             className={`rounded-xl px-3 py-1.5 text-xs font-bold transition ${c.accountStatus === 'Active'
-                                ? 'border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
-                                : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                              ? 'border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
+                              : 'bg-emerald-600 text-white hover:bg-emerald-700'
                               }`}
                           >
                             {c.accountStatus === 'Active' ? 'Suspend Account' : 'Activate Account'}
@@ -1177,8 +1177,8 @@ export default function AdminDashboard() {
                       type="button"
                       onClick={() => setBookingFilter(st)}
                       className={`rounded-xl px-3 py-1.5 text-xs font-bold transition ${bookingFilter === st
-                          ? 'bg-slate-900 text-white'
-                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                        ? 'bg-slate-900 text-white'
+                        : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
                         }`}
                     >
                       {st}

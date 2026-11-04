@@ -56,9 +56,8 @@ export default function TechnicianDashboard() {
 
       {/* Sticky Technician Field Left Sidebar */}
       <aside
-        className={`fixed top-16 bottom-0 left-0 z-40 w-72 bg-slate-950 text-slate-300 flex flex-col border-r border-slate-800 transition-transform duration-200 lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:self-start lg:z-20 lg:translate-x-0 shrink-0 overflow-y-auto ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed top-16 bottom-0 left-0 z-40 w-72 bg-slate-950 text-slate-300 flex flex-col border-r border-slate-800 transition-transform duration-200 lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:self-start lg:z-20 lg:translate-x-0 shrink-0 overflow-y-auto ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         <div className="px-4 py-3.5 border-b border-slate-800/90 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5 min-w-0">
@@ -108,20 +107,18 @@ export default function TechnicianDashboard() {
                     setActiveTab(item.id);
                     setSidebarOpen(false);
                   }}
-                  className={`w-full flex items-center justify-between gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold transition ${
-                    active
+                  className={`w-full flex items-center justify-between gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold transition ${active
                       ? 'bg-brand-600 text-white shadow-xs'
                       : 'text-slate-400 hover:bg-slate-900 hover:text-white'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-white' : 'text-slate-400'}`} />
                     <span className="truncate">{item.label}</span>
                   </div>
                   <span
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-bold shrink-0 ${
-                      active ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-300'
-                    }`}
+                    className={`rounded-full px-2 py-0.5 text-[10px] font-bold shrink-0 ${active ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-300'
+                      }`}
                   >
                     {item.badge}
                   </span>
