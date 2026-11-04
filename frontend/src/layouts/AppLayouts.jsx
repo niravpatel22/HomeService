@@ -34,11 +34,11 @@ export function MainHeader() {
 
   const userInitials = currentUser?.fullName
     ? currentUser.fullName
-        .split(' ')
-        .slice(0, 2)
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
+      .split(' ')
+      .slice(0, 2)
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
     : 'U';
 
   const handleInstantRoleSwitch = (role, dashboardPath) => {
@@ -82,10 +82,9 @@ export function MainHeader() {
               to="/"
               end
               className={({ isActive }) =>
-                `whitespace-nowrap inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
-                  isActive
-                    ? 'bg-white text-brand-700 shadow-xs'
-                    : 'text-slate-600 hover:bg-white/60 hover:text-slate-900'
+                `whitespace-nowrap inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${isActive
+                  ? 'bg-white text-brand-700 shadow-xs'
+                  : 'text-slate-600 hover:bg-white/60 hover:text-slate-900'
                 }`
               }
             >
@@ -96,10 +95,9 @@ export function MainHeader() {
             <NavLink
               to="/services"
               className={({ isActive }) =>
-                `whitespace-nowrap inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
-                  isActive
-                    ? 'bg-white text-brand-700 shadow-xs'
-                    : 'text-slate-600 hover:bg-white/60 hover:text-slate-900'
+                `whitespace-nowrap inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${isActive
+                  ? 'bg-white text-brand-700 shadow-xs'
+                  : 'text-slate-600 hover:bg-white/60 hover:text-slate-900'
                 }`
               }
             >
@@ -110,10 +108,9 @@ export function MainHeader() {
             <NavLink
               to="/register/provider"
               className={({ isActive }) =>
-                `whitespace-nowrap inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
-                  isActive
-                    ? 'bg-white text-brand-700 shadow-xs'
-                    : 'text-slate-600 hover:bg-white/60 hover:text-slate-900'
+                `whitespace-nowrap inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${isActive
+                  ? 'bg-white text-brand-700 shadow-xs'
+                  : 'text-slate-600 hover:bg-white/60 hover:text-slate-900'
                 }`
               }
             >
@@ -125,10 +122,9 @@ export function MainHeader() {
               <NavLink
                 to={ROLE_HOME_ROUTES[currentUser.role]}
                 className={({ isActive }) =>
-                  `whitespace-nowrap inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-extrabold transition ${
-                    isActive
-                      ? 'bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-xs'
-                      : 'bg-white/90 text-slate-900 hover:bg-white shadow-2xs'
+                  `whitespace-nowrap inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-extrabold transition ${isActive
+                    ? 'bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-xs'
+                    : 'bg-white/90 text-slate-900 hover:bg-white shadow-2xs'
                   }`
                 }
               >
@@ -184,11 +180,10 @@ export function MainHeader() {
                     roleNotifications.map((item) => (
                       <div
                         key={item.id}
-                        className={`rounded-xl border p-3 text-xs transition ${
-                          item.isRead
+                        className={`rounded-xl border p-3 text-xs transition ${item.isRead
                             ? 'border-slate-100 bg-slate-50/60 text-slate-600'
                             : 'border-brand-100 bg-brand-50/50 text-slate-900'
-                        }`}
+                          }`}
                       >
                         <p className="font-bold text-slate-900">{item.title}</p>
                         <p className="mt-0.5 text-slate-600 leading-relaxed">{item.message}</p>
@@ -234,28 +229,25 @@ export function MainHeader() {
                         key={cred.role}
                         type="button"
                         onClick={() => handleInstantRoleSwitch(cred.role, cred.dashboardPath)}
-                        className={`w-full rounded-xl p-2.5 text-left text-xs transition flex items-center justify-between gap-2 ${
-                          isActiveRole
+                        className={`w-full rounded-xl p-2.5 text-left text-xs transition flex items-center justify-between gap-2 ${isActiveRole
                             ? 'bg-brand-600 text-white shadow-xs'
                             : 'hover:bg-slate-50 text-slate-800 border border-transparent hover:border-slate-200'
-                        }`}
+                          }`}
                       >
                         <div className="min-w-0">
                           <p className="font-extrabold truncate">{cred.roleTitle}</p>
                           <p
-                            className={`text-[10px] font-mono truncate ${
-                              isActiveRole ? 'text-brand-100' : 'text-slate-500'
-                            }`}
+                            className={`text-[10px] font-mono truncate ${isActiveRole ? 'text-brand-100' : 'text-slate-500'
+                              }`}
                           >
                             {cred.email} • {cred.password}
                           </p>
                         </div>
                         <span
-                          className={`rounded-md px-2 py-0.5 text-[10px] font-bold shrink-0 ${
-                            isActiveRole
+                          className={`rounded-md px-2 py-0.5 text-[10px] font-bold shrink-0 ${isActiveRole
                               ? 'bg-white/20 text-white'
                               : 'bg-slate-100 text-slate-700'
-                          }`}
+                            }`}
                         >
                           {isActiveRole ? 'Active' : 'Switch →'}
                         </span>
@@ -385,17 +377,15 @@ export function MainHeader() {
                     key={cred.role}
                     type="button"
                     onClick={() => handleInstantRoleSwitch(cred.role, cred.dashboardPath)}
-                    className={`rounded-xl p-2.5 text-left text-xs font-bold transition border ${
-                      isActiveRole
+                    className={`rounded-xl p-2.5 text-left text-xs font-bold transition border ${isActiveRole
                         ? 'border-brand-600 bg-brand-600 text-white'
                         : 'border-slate-200 bg-slate-50 text-slate-800 hover:bg-slate-100'
-                    }`}
+                      }`}
                   >
                     <span className="block truncate">{cred.roleTitle}</span>
                     <span
-                      className={`block text-[10px] font-mono truncate mt-0.5 ${
-                        isActiveRole ? 'text-brand-100' : 'text-slate-500'
-                      }`}
+                      className={`block text-[10px] font-mono truncate mt-0.5 ${isActiveRole ? 'text-brand-100' : 'text-slate-500'
+                        }`}
                     >
                       {cred.email}
                     </span>
