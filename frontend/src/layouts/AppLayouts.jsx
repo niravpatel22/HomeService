@@ -8,11 +8,8 @@ import {
   LogOut,
   UserCheck,
   LayoutDashboard,
-  Search,
-  Wrench,
-  CalendarCheck,
-  Users,
   CheckCheck,
+  KeyRound,
 } from 'lucide-react';
 import { usePlatform } from '../context/PlatformContext';
 import { ROLE_HOME_ROUTES, ROLE_LABELS } from '../constants';
@@ -29,30 +26,44 @@ export function MainHeader() {
   );
   const unreadCount = roleNotifications.filter((n) => !n.isRead).length;
 
+  const userInitials = currentUser?.fullName
+    ? currentUser.fullName
+        .split(' ')
+        .slice(0, 2)
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+    : 'U';
+
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/90 bg-white/95 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-8">
-          <Link to="/" className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-white shadow-sm">
-              <ShieldCheck className="h-6 w-6" />
+    <header className="sticky top-0 z-40 border-b border-slate-200/90 bg-white/95 backdrop-blur-md shadow-2xs">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        {/* Left: Brand Logo + Primary Navigation */}
+        <div className="flex items-center gap-6 xl:gap-8 min-w-0">
+          <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-white shadow-sm transition group-hover:bg-brand-700">
+              <ShieldCheck className="h-5 w-5" />
             </div>
-            <div>
-              <span className="text-lg font-extrabold tracking-tight text-slate-900">
+            <div className="leading-none">
+              <span className="text-lg font-extrabold tracking-tight text-slate-900 whitespace-nowrap">
                 HomeServe<span className="text-brand-600">Pro</span>
               </span>
-              <span className="block text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+              <span className="block text-[9px] font-bold uppercase tracking-widest text-slate-400 whitespace-nowrap mt-0.5">
                 HomeServe Technologies
               </span>
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+          <nav className="hidden lg:flex items-center gap-1.5 text-sm font-medium text-slate-600">
             <NavLink
               to="/"
               end
               className={({ isActive }) =>
-                isActive ? 'text-brand-600 font-semibold' : 'hover:text-slate-900 transition'
+                `whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                  isActive
+                    ? 'bg-brand-50 text-brand-700'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`
               }
             >
               Home
@@ -60,7 +71,11 @@ export function MainHeader() {
             <NavLink
               to="/services"
               className={({ isActive }) =>
-                isActive ? 'text-brand-600 font-semibold' : 'hover:text-slate-900 transition'
+                `whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                  isActive
+                    ? 'bg-brand-50 text-brand-700'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`
               }
             >
               Explore Services
@@ -68,7 +83,11 @@ export function MainHeader() {
             <NavLink
               to="/register/provider"
               className={({ isActive }) =>
-                isActive ? 'text-brand-600 font-semibold' : 'hover:text-slate-900 transition'
+                `whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                  isActive
+                    ? 'bg-brand-50 text-brand-700'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`
               }
             >
               Become a Partner
@@ -77,27 +96,33 @@ export function MainHeader() {
               <NavLink
                 to={ROLE_HOME_ROUTES[currentUser.role]}
                 className={({ isActive }) =>
-                  isActive ? 'text-brand-600 font-semibold' : 'hover:text-slate-900 transition'
+                  `whitespace-nowrap inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                    isActive
+                      ? 'bg-slate-900 text-white shadow-2xs'
+                      : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
+                  }`
                 }
               >
-                {ROLE_LABELS[currentUser.role]} Dashboard
+                <LayoutDashboard className="h-3.5 w-3.5 text-brand-500 shrink-0" />
+                <span>{ROLE_LABELS[currentUser.role]} Console</span>
               </NavLink>
             )}
           </nav>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Right: Notification Bell & Single-Line Auth Controls */}
+        <div className="flex items-center gap-2.5 shrink-0">
           {/* Notification Bell */}
           <div className="relative">
             <button
               type="button"
               onClick={() => setNotifOpen(!notifOpen)}
-              className="relative rounded-xl border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-100"
+              className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100"
               aria-label="Notifications"
             >
-              <Bell className="h-5 w-5" />
+              <Bell className="h-4 w-4" />
               {unreadCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-600 text-[10px] font-bold text-white">
+                <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-bold text-white">
                   {unreadCount}
                 </span>
               )}
@@ -108,12 +133,12 @@ export function MainHeader() {
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div>
                     <h4 className="text-sm font-bold text-slate-900">Notification Center</h4>
-                    <p className="text-xs text-slate-500">Real-time booking & system alerts</p>
+                    <p className="text-xs text-slate-500">Real-time booking & webhook alerts</p>
                   </div>
                   <button
                     type="button"
                     onClick={markAllNotificationsRead}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-brand-600 hover:text-brand-700"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-brand-600 hover:text-brand-700 whitespace-nowrap"
                   >
                     <CheckCheck className="h-3.5 w-3.5" /> Mark all read
                   </button>
@@ -125,10 +150,11 @@ export function MainHeader() {
                     roleNotifications.map((item) => (
                       <div
                         key={item.id}
-                        className={`rounded-xl border p-3 text-xs transition ${item.isRead
+                        className={`rounded-xl border p-3 text-xs transition ${
+                          item.isRead
                             ? 'border-slate-100 bg-slate-50/60 text-slate-600'
                             : 'border-brand-100 bg-brand-50/50 text-slate-900'
-                          }`}
+                        }`}
                       >
                         <p className="font-semibold text-slate-900">{item.title}</p>
                         <p className="mt-1 text-slate-600 leading-relaxed">{item.message}</p>
@@ -141,81 +167,132 @@ export function MainHeader() {
           </div>
 
           {currentUser ? (
-            <div className="hidden sm:flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2 shrink-0">
+              {/* Active User Identity Pill */}
               <button
                 type="button"
                 onClick={() => navigate(ROLE_HOME_ROUTES[currentUser.role])}
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-800 hover:bg-slate-100"
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/90 pl-1.5 pr-3 py-1 text-xs font-semibold text-slate-800 hover:bg-slate-100 transition whitespace-nowrap"
               >
-                <LayoutDashboard className="h-4 w-4 text-brand-600" />
-                <span>{currentUser.fullName.split(' ')[0]}</span>
-                <span className="rounded-md bg-brand-100 px-1.5 py-0.5 text-[10px] font-bold text-brand-700">
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-brand-600 text-[10px] font-extrabold text-white shrink-0">
+                  {userInitials}
+                </span>
+                <span className="font-bold text-slate-900 whitespace-nowrap">
+                  {currentUser.fullName.split(' ')[0]}
+                </span>
+                <span className="rounded-md bg-brand-100 px-2 py-0.5 text-[10px] font-bold text-brand-700 whitespace-nowrap">
                   {ROLE_LABELS[currentUser.role]}
                 </span>
               </button>
+
+              {/* Switch Role Button */}
               <Link
                 to="/login"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-bold text-brand-700 hover:bg-brand-100 transition"
-                title="View All Role Credentials & Switch Role"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-bold text-brand-700 hover:bg-brand-100 transition whitespace-nowrap shrink-0"
+                title="Switch Role or View Demo Credentials"
               >
-                <UserCheck className="h-3.5 w-3.5" />
+                <UserCheck className="h-3.5 w-3.5 shrink-0" />
                 <span>Switch Role</span>
               </Link>
+
+              {/* Sign Out Button */}
               <button
                 type="button"
                 onClick={() => {
                   logout();
                   navigate('/login');
                 }}
-                className="inline-flex items-center gap-1 rounded-xl border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 transition whitespace-nowrap shrink-0"
                 title="Sign Out"
               >
-                <LogOut className="h-3.5 w-3.5" />
+                <LogOut className="h-3.5 w-3.5 shrink-0" />
                 <span>Sign Out</span>
               </button>
             </div>
           ) : (
-            <div className="hidden sm:flex items-center gap-2">
-              <Link to="/login" className="btn-primary py-2 text-xs">
-                Role Login & Demo Credentials
+            <div className="hidden md:flex items-center gap-2 shrink-0">
+              <Link
+                to="/login"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-3.5 py-2 text-xs font-bold text-white shadow-2xs hover:bg-brand-700 transition whitespace-nowrap"
+              >
+                <KeyRound className="h-3.5 w-3.5 shrink-0" />
+                <span>Role Login & Credentials</span>
               </Link>
-              <Link to="/register" className="btn-secondary py-2 text-xs">
+              <Link
+                to="/register"
+                className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition whitespace-nowrap"
+              >
                 Register
               </Link>
             </div>
           )}
 
+          {/* Mobile / Tablet Hamburger Toggle */}
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="rounded-lg p-2 text-slate-600 md:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-600 lg:hidden"
+            aria-label="Toggle Menu"
           >
-            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Responsive Mobile & Tablet Drawer */}
       {mobileOpen && (
-        <div className="border-t border-slate-200 bg-white px-4 py-4 md:hidden space-y-3">
-          <Link to="/" onClick={() => setMobileOpen(false)} className="block py-1.5 text-sm font-semibold text-slate-800">
-            Home
-          </Link>
-          <Link to="/services" onClick={() => setMobileOpen(false)} className="block py-1.5 text-sm font-semibold text-slate-800">
-            Explore Services
-          </Link>
-          <Link to="/register/provider" onClick={() => setMobileOpen(false)} className="block py-1.5 text-sm font-semibold text-slate-800">
-            Become a Service Provider
-          </Link>
+        <div className="border-t border-slate-200 bg-white px-4 py-4 lg:hidden space-y-3 shadow-lg">
+          <div className="grid grid-cols-1 gap-1">
+            <Link
+              to="/"
+              onClick={() => setMobileOpen(false)}
+              className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+            >
+              Home
+            </Link>
+            <Link
+              to="/services"
+              onClick={() => setMobileOpen(false)}
+              className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+            >
+              Explore Services
+            </Link>
+            <Link
+              to="/register/provider"
+              onClick={() => setMobileOpen(false)}
+              className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+            >
+              Become a Service Provider
+            </Link>
+          </div>
+
           {currentUser ? (
-            <>
-              <Link
-                to={ROLE_HOME_ROUTES[currentUser.role]}
-                onClick={() => setMobileOpen(false)}
-                className="block py-1.5 text-sm font-bold text-brand-600"
-              >
-                Go to {ROLE_LABELS[currentUser.role]} Dashboard
-              </Link>
+            <div className="border-t border-slate-100 pt-3 space-y-2">
+              <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2">
+                <div>
+                  <p className="text-xs font-bold text-slate-900">{currentUser.fullName}</p>
+                  <p className="text-[11px] font-mono text-slate-500">{currentUser.email}</p>
+                </div>
+                <span className="rounded-md bg-brand-100 px-2 py-0.5 text-[10px] font-bold text-brand-700">
+                  {ROLE_LABELS[currentUser.role]}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Link
+                  to={ROLE_HOME_ROUTES[currentUser.role]}
+                  onClick={() => setMobileOpen(false)}
+                  className="btn-primary py-2 text-xs text-center"
+                >
+                  Open Dashboard
+                </Link>
+                <Link
+                  to="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="btn-secondary py-2 text-xs text-center"
+                >
+                  Switch Role
+                </Link>
+              </div>
               <button
                 type="button"
                 onClick={() => {
@@ -223,17 +300,25 @@ export function MainHeader() {
                   setMobileOpen(false);
                   navigate('/login');
                 }}
-                className="btn-secondary w-full text-xs"
+                className="w-full rounded-xl border border-rose-200 bg-rose-50 py-2 text-xs font-bold text-rose-700"
               >
-                Logout
+                Sign Out
               </button>
-            </>
+            </div>
           ) : (
-            <div className="flex gap-2 pt-2">
-              <Link to="/login" onClick={() => setMobileOpen(false)} className="btn-secondary flex-1 text-xs">
-                Sign In
+            <div className="flex gap-2 border-t border-slate-100 pt-3">
+              <Link
+                to="/login"
+                onClick={() => setMobileOpen(false)}
+                className="btn-primary flex-1 text-xs text-center py-2.5"
+              >
+                Role Login & Credentials
               </Link>
-              <Link to="/register" onClick={() => setMobileOpen(false)} className="btn-primary flex-1 text-xs">
+              <Link
+                to="/register"
+                onClick={() => setMobileOpen(false)}
+                className="btn-secondary flex-1 text-xs text-center py-2.5"
+              >
                 Register
               </Link>
             </div>
@@ -308,4 +393,3 @@ export function AppShell({ children }) {
     </div>
   );
 }
-
