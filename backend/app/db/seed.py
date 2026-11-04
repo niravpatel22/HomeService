@@ -376,7 +376,7 @@ def seed_database(db: Session | None = None) -> dict:
                 description="Comprehensive thermal and load inspection of distribution boards, replacement of faulty modular switches/sockets, earthing verification, and short-circuit remediation.",
                 base_price=Decimal("599.00"),
                 duration_minutes=60,
-                image_url="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=900&q=80",
+                image_url="/assets/services/electrical-inspection.jpg",
                 inclusions_json=json.dumps(
                     [
                         "Complete MCB load test",
@@ -397,7 +397,7 @@ def seed_database(db: Session | None = None) -> dict:
                 description="2x deeper coil cleaning using high-pressure jet pump and biodegradable foam, drain tray flushing, blower sanitization, and gas pressure check.",
                 base_price=Decimal("799.00"),
                 duration_minutes=90,
-                image_url="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=900&q=80",
+                image_url="/assets/services/ac-foam-service.jpg",
                 inclusions_json=json.dumps(
                     [
                         "Indoor evaporator coil foam wash",
@@ -418,7 +418,7 @@ def seed_database(db: Session | None = None) -> dict:
                 description="Precision fixing of concealed/exposed pipe leaks, quarter-turn cartridge replacement, flush tank servicing, and pressure balancing.",
                 base_price=Decimal("499.00"),
                 duration_minutes=60,
-                image_url="https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=900&q=80",
+                image_url="/assets/services/luxury-plumbing.jpg",
                 inclusions_json=json.dumps(
                     [
                         "Tap/mixer leak resolution",
@@ -439,7 +439,7 @@ def seed_database(db: Session | None = None) -> dict:
                 description="5-star residential deep cleaning using industrial single-disc scrubbers, steam sanitizers, kitchen chimney degreasing, and bathroom descaling.",
                 base_price=Decimal("2499.00"),
                 duration_minutes=180,
-                image_url="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=80",
+                image_url="/assets/services/home-deep-cleaning.jpg",
                 inclusions_json=json.dumps(
                     [
                         "Machine floor scrubbing",
@@ -460,7 +460,7 @@ def seed_database(db: Session | None = None) -> dict:
                 description="Low-VOC luxury interior emulsion painting with 2-coat acrylic putty leveling, crack filling, mechanized sanding, and full furniture masking.",
                 base_price=Decimal("3499.00"),
                 duration_minutes=240,
-                image_url="https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=900&q=80",
+                image_url="/assets/services/interior-painting.jpg",
                 inclusions_json=json.dumps(
                     [
                         "Laser area measurement",
@@ -481,7 +481,7 @@ def seed_database(db: Session | None = None) -> dict:
                 description="Expert mortise cutting and installation of biometric smart locks, hydraulic door closers, soft-close wardrobe hinges, and telescopic drawer channels.",
                 base_price=Decimal("699.00"),
                 duration_minutes=75,
-                image_url="https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=900&q=80",
+                image_url="/assets/services/carpentry-woodwork.jpg",
                 inclusions_json=json.dumps(
                     [
                         "Precision jig template routing",
@@ -502,7 +502,7 @@ def seed_database(db: Session | None = None) -> dict:
                 description="Complete digital error-code diagnostics, drum bearing/suspension check, drain pump cleaning, and refrigerator thermostat/inverter PCB repair.",
                 base_price=Decimal("549.00"),
                 duration_minutes=60,
-                image_url="https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=900&q=80",
+                image_url="/assets/services/appliance-diagnostics.jpg",
                 inclusions_json=json.dumps(
                     [
                         "Multi-point digital PCB check",
@@ -523,7 +523,7 @@ def seed_database(db: Session | None = None) -> dict:
                 description="Bayer/WHO-certified odorless gel baiting and residual spray treatment targeting cockroaches, red/black ants, silverfish, and spiders.",
                 base_price=Decimal("999.00"),
                 duration_minutes=60,
-                image_url="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=900&q=80",
+                image_url="/assets/services/botanical-pest-control.jpg",
                 inclusions_json=json.dumps(
                     [
                         "No need to empty kitchen cabinets",
@@ -880,14 +880,14 @@ def seed_database(db: Session | None = None) -> dict:
                 booking_id=101,
                 uploaded_by_user_id=7,
                 image_type="COMPLETION",
-                file_url="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=600&q=80",
+                file_url="/assets/services/ac-foam-service.jpg",
                 caption="Clean sanitized evaporator coil post foam-jet wash",
             ),
             BookingImage(
                 booking_id=102,
                 uploaded_by_user_id=2,
                 image_type="PROBLEM",
-                file_url="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80",
+                file_url="/assets/services/electrical-inspection.jpg",
                 caption="16A kitchen modular socket panel",
             ),
         ]

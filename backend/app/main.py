@@ -1,10 +1,12 @@
+from pathlib import Path
 import time
 from collections import defaultdict
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.api.v1.endpoints.platform_routes import router as v1_router
 from app.core.config import settings
@@ -32,7 +34,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
@@ -61,7 +63,8 @@ async def security_and_rate_limit_middleware(request: Request, call_next):
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    response.headers["Cache-Control"] = "no-store"
+    if request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-store"
     return response
 
 
@@ -71,4 +74,18 @@ def health_check():
 
 
 app.include_router(v1_router, prefix=settings.API_V1_PREFIX)
+
+# Serve bundled React SPA if static_dist exists (for full-stack Render deployment)
+_STATIC_DIR = Path(__file__).resolve().parent.parent / "static_dist"
+if _STATIC_DIR.exists() and (_STATIC_DIR / "index.html").exists():
+    if (_STATIC_DIR / "assets").exists():
+        app.mount("/assets", StaticFiles(directory=str(_STATIC_DIR / "assets")), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    def serve_spa(full_path: str):
+        candidate = _STATIC_DIR / full_path
+        if full_path and candidate.is_file():
+            return FileResponse(str(candidate))
+        return FileResponse(str(_STATIC_DIR / "index.html"))
+
 

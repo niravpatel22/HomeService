@@ -5,6 +5,53 @@
 
 ---
 
+## Live Production Deployment Links
+
+| Environment / Resource | Live URL | Description |
+| :--- | :--- | :--- |
+| **1. GitHub Repository** | **[https://github.com/niravpatel22/HomeService](https://github.com/niravpatel22/HomeService)** | Complete full-stack source code, architecture diagrams, 20-table SQL schema, Docker & cloud blueprints |
+| **2. Netlify Production App** | **[https://homeserve-technologies-saas.netlify.app](https://homeserve-technologies-saas.netlify.app)** | Live React 18 + Tailwind CSS SaaS Frontend connected to Cloud REST API & Serverless Functions |
+| **3. Render Cloud Platform & API** | **[https://homeserve-pro-api.onrender.com](https://homeserve-pro-api.onrender.com)** | Live Python FastAPI Backend + Full-Stack Web App (`uvicorn app.main:app`) |
+| **4. Render Swagger OpenAPI Docs** | **[https://homeserve-pro-api.onrender.com/docs](https://homeserve-pro-api.onrender.com/docs)** | Interactive FastAPI OpenAPI 3.1 / Swagger UI for testing all REST endpoints |
+| **5. Render Health Endpoint** | **[https://homeserve-pro-api.onrender.com/health](https://homeserve-pro-api.onrender.com/health)** | Live JSON health check (`{"status": "healthy"}`) |
+
+---
+
+## End-to-End Cloud System Architecture Diagram
+
+```mermaid
+flowchart LR
+    subgraph Clients["Multi-Role Web Clients (React 18 + Vite + Tailwind CSS)"]
+        C1["Customer Portal\n(/customer/dashboard)"]
+        C2["Service Provider Console\n(/provider/dashboard)"]
+        C3["Technician Field Console\n(/technician/dashboard)"]
+        C4["Super Admin Command Center\n(/admin/dashboard)"]
+    end
+
+    subgraph Hosting["Cloud Edge & Application Layer"]
+        N["Netlify Global CDN\nhomeserve-technologies-saas.netlify.app"]
+        R["Render Cloud Web Service (Python FastAPI)\nhomeserve-pro-api.onrender.com"]
+    end
+
+    subgraph CoreServices["FastAPI Modular Monolith (/api/v1)"]
+        AUTH["JWT Auth & RBAC Guard\n(Bcrypt + Ownership Validation)"]
+        LOCK["Transactional Slot Lock\n(Double-Booking Prevention)"]
+        PAY["Razorpay Checkout & HMAC\n(GST 18% + Commission Split)"]
+        SYNC["Real-Time State & Offline Engine\n(Auto-Failover + LocalStorage Sync)"]
+    end
+
+    subgraph DataLayer["20-Table Relational Database"]
+        DB[("MySQL 8.0 / SQLAlchemy 2.0\n20 Core Normalized Tables")]
+    end
+
+    C1 & C2 & C3 & C4 --> N
+    N -->|HTTPS REST /api/v1| R
+    R --> AUTH & LOCK & PAY & SYNC
+    AUTH & LOCK & PAY & SYNC --> DB
+```
+
+---
+
 ## Table of Contents
 
 1. [Project Overview & Business Case](#1-project-overview--business-case)
@@ -407,6 +454,43 @@ Development strictly follows the **9 sequential phases** with mandatory user val
 | *Docs* | **Documentation & Presentation** | Comprehensive Technical Docs, AI Prompts & Development Log, Final Presentation | **10 Marks** |
 | **TOTAL** | | | **100 Marks** |
 
-render: rnd_5VaB8vd7L2BOXd4DSni9AiCX9SQf
+---
 
-this is render api key and connect and upload all to render and connecet to netlify byyoursefl and then once done inform this si api key : rnd_5VaB8vd7L2BOXd4DSni9AiCX9SQf
+## 14. Entity-Relationship (ER) Diagram (20 Normalized Tables)
+
+```mermaid
+erDiagram
+    USERS ||--o| CUSTOMERS : "1:1 role=customer"
+    USERS ||--o| SERVICE_PROVIDERS : "1:1 role=service_provider"
+    USERS ||--o| TECHNICIANS : "1:1 role=technician"
+    USERS ||--o{ NOTIFICATIONS : "receives"
+    USERS ||--o{ REFRESH_TOKENS : "sessions"
+
+    CUSTOMERS ||--o{ ADDRESSES : "saves"
+    CUSTOMERS ||--o{ BOOKINGS : "schedules"
+    CUSTOMERS ||--o{ PAYMENTS : "pays"
+    CUSTOMERS ||--o{ REVIEWS : "writes"
+    CUSTOMERS ||--o{ COMPLAINTS : "files"
+    CUSTOMERS ||--o{ CUSTOMER_FAVORITES : "bookmarks"
+
+    SUBSCRIPTION_PLANS ||--o{ SERVICE_PROVIDERS : "tier"
+    SERVICE_PROVIDERS ||--o{ TECHNICIANS : "employs"
+    SERVICE_PROVIDERS ||--o{ PROVIDER_SERVICES : "offers"
+    SERVICE_PROVIDERS ||--o{ SERVICE_AREAS : "covers"
+    SERVICE_PROVIDERS ||--o{ AVAILABILITY_SLOTS : "publishes"
+    SERVICE_PROVIDERS ||--o{ BOOKINGS : "fulfills"
+    SERVICE_PROVIDERS ||--o{ PROVIDER_EARNINGS : "earns"
+
+    SERVICE_CATEGORIES ||--o{ SERVICES : "contains"
+    SERVICES ||--o{ PROVIDER_SERVICES : "customized_in"
+    SERVICES ||--o{ BOOKINGS : "booked_for"
+
+    BOOKINGS ||--o| BOOKING_ASSIGNMENTS : "dispatched_via"
+    TECHNICIANS ||--o{ BOOKING_ASSIGNMENTS : "executes"
+    BOOKINGS ||--o{ BOOKING_IMAGES : "attaches"
+    BOOKINGS ||--o{ PAYMENTS : "settled_by"
+    BOOKINGS ||--o| INVOICES : "billed_in"
+    BOOKINGS ||--o| REVIEWS : "rated_in"
+    BOOKINGS ||--o{ COMPLAINTS : "disputed_in"
+    COUPONS ||--o{ BOOKINGS : "discounts"
+```
