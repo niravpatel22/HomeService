@@ -5,6 +5,60 @@ import apiClient from '../services/apiClient';
 
 const PlatformContext = createContext(null);
 
+export const DEMO_ROLE_CREDENTIALS = [
+  {
+    role: 'customer',
+    roleTitle: 'Customer Dashboard',
+    fullName: 'Aarav Mehta',
+    email: 'customer@homeserve.com',
+    password: 'Customer@123',
+    badge: 'Verified Customer',
+    dashboardPath: '/customer/dashboard',
+    description: 'Book services, apply coupons, track technician status, download GST invoices & submit reviews.',
+  },
+  {
+    role: 'service_provider',
+    roleTitle: 'Service Provider Console',
+    fullName: 'Rajesh Kulkarni (Apex Home Solutions)',
+    email: 'provider@homeserve.com',
+    password: 'Provider@123',
+    badge: 'KYC Approved Partner',
+    dashboardPath: '/provider/dashboard',
+    description: 'Manage custom service pricing, accept bookings, dispatch field technicians & track net earnings.',
+  },
+  {
+    role: 'technician',
+    roleTitle: 'Technician Field Console',
+    fullName: 'Manoj Kumar (Field Engineer)',
+    email: 'tech@homeserve.com',
+    password: 'Tech@12345',
+    badge: 'Active Field Tech',
+    dashboardPath: '/technician/dashboard',
+    description: 'View assigned service jobs, customer addresses, update status to In Progress / Completed & upload proof.',
+  },
+  {
+    role: 'super_admin',
+    roleTitle: 'Super Admin Governance',
+    fullName: 'Vikramaditya Rao (Platform Admin)',
+    email: 'admin@homeserve.com',
+    password: 'Admin@12345',
+    badge: 'Super Admin',
+    dashboardPath: '/admin/dashboard',
+    description: 'Approve/reject provider KYC, manage 8 categories, coupons, complaints, commissions & CSV exports.',
+  },
+];
+
+const ACCOUNT_PASSWORDS = {
+  'admin@homeserve.com': 'Admin@12345',
+  'customer@homeserve.com': 'Customer@123',
+  'priya.sharma@example.com': 'Customer@123',
+  'provider@homeserve.com': 'Provider@123',
+  'pending.provider@homeserve.com': 'Provider@123',
+  'sparkle.clean@homeserve.com': 'Provider@123',
+  'tech@homeserve.com': 'Tech@12345',
+  'ravi.tech@homeserve.com': 'Tech@12345',
+};
+
 const ROLE_DEFAULT_CREDENTIALS = {
   super_admin: { email: 'admin@homeserve.com', password: 'Admin@12345' },
   customer: { email: 'customer@homeserve.com', password: 'Customer@123' },
@@ -14,7 +68,17 @@ const ROLE_DEFAULT_CREDENTIALS = {
 
 export function PlatformProvider({ children }) {
   const [data, setData] = useState(INITIAL_MOCK_DATA);
-  const [currentUser, setCurrentUser] = useState(INITIAL_MOCK_DATA.users[1]);
+  const [currentUser, setCurrentUser] = useState(() => {
+    const savedUserJson = sessionStorage.getItem('hs_active_user');
+    if (savedUserJson) {
+      try {
+        return JSON.parse(savedUserJson);
+      } catch {
+        // Ignore parse error
+      }
+    }
+    return null;
+  });
   const [isBackendConnected, setIsBackendConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [toast, setToast] = useState(null);
@@ -45,21 +109,13 @@ export function PlatformProvider({ children }) {
 
   useEffect(() => {
     const initSession = async () => {
-      const bootstrapped = await syncWithBackend();
+      await syncWithBackend();
       const existingToken = sessionStorage.getItem('hs_access_token');
-      if (!existingToken && bootstrapped) {
-        try {
-          const loginRes = await apiClient.post('/auth/login', ROLE_DEFAULT_CREDENTIALS.customer);
-          sessionStorage.setItem('hs_access_token', loginRes.data.access_token);
-          sessionStorage.setItem('hs_refresh_token', loginRes.data.refresh_token);
-          setCurrentUser(loginRes.data.user);
-        } catch {
-          // Ignore auto-login error
-        }
-      } else if (existingToken) {
+      if (existingToken) {
         try {
           const meRes = await apiClient.get('/auth/me');
           setCurrentUser(meRes.data);
+          sessionStorage.setItem('hs_active_user', JSON.stringify(meRes.data));
         } catch {
           sessionStorage.removeItem('hs_access_token');
         }
@@ -71,16 +127,18 @@ export function PlatformProvider({ children }) {
   // --- AUTHENTICATION ACTIONS ---
   const loginWithCredentials = async (email, password) => {
     const normalizedEmail = (email || '').trim().toLowerCase();
+    const trimmedPassword = (password || '').trim();
     try {
       const res = await apiClient.post('/auth/login', {
         email: normalizedEmail,
-        password,
+        password: trimmedPassword,
       });
       sessionStorage.setItem('hs_access_token', res.data.access_token);
       sessionStorage.setItem('hs_refresh_token', res.data.refresh_token);
+      sessionStorage.setItem('hs_active_user', JSON.stringify(res.data.user));
       setCurrentUser(res.data.user);
       await syncWithBackend();
-      showToast(`Authenticated via FastAPI JWT as ${res.data.user.fullName}!`, 'success');
+      showToast(`Signed in as ${res.data.user.fullName} (${res.data.user.role.replace('_', ' ').toUpperCase()})`, 'success');
       return {
         success: true,
         user: res.data.user,
@@ -90,16 +148,30 @@ export function PlatformProvider({ children }) {
       if (err.response) {
         return {
           success: false,
-          error: err.response.data?.detail || 'Invalid credentials.',
+          error: err.response.data?.detail || 'Invalid email or password.',
         };
       }
-      // Fallback if offline
+      // Role-based credential verification against seeded users
       const user = data.users.find((u) => u.email.toLowerCase() === normalizedEmail);
       if (!user) {
         return { success: false, error: 'No account found with this email address.' };
       }
+      const expectedPassword = ACCOUNT_PASSWORDS[normalizedEmail] || user.password;
+      if (expectedPassword && trimmedPassword !== expectedPassword) {
+        return {
+          success: false,
+          error: `Invalid password for ${normalizedEmail}. Please check the visible role credentials panel.`,
+        };
+      }
+      if (!user.isActive) {
+        return {
+          success: false,
+          error: 'This account has been suspended by Super Admin.',
+        };
+      }
+      sessionStorage.setItem('hs_active_user', JSON.stringify(user));
       setCurrentUser(user);
-      showToast(`Welcome back, ${user.fullName}!`, 'success');
+      showToast(`Signed in as ${user.fullName} (${user.role.replace('_', ' ').toUpperCase()})`, 'success');
       return { success: true, user, redirectPath: ROLE_HOME_ROUTES[user.role] || '/' };
     }
   };
@@ -107,25 +179,12 @@ export function PlatformProvider({ children }) {
   const quickSwitchRole = async (roleKey) => {
     const creds = ROLE_DEFAULT_CREDENTIALS[roleKey];
     if (creds) {
-      try {
-        const res = await apiClient.post('/auth/login', creds);
-        sessionStorage.setItem('hs_access_token', res.data.access_token);
-        sessionStorage.setItem('hs_refresh_token', res.data.refresh_token);
-        setCurrentUser(res.data.user);
-        await syncWithBackend();
-        showToast(`Switched active JWT session to ${res.data.user.fullName}`, 'info');
-        return ROLE_HOME_ROUTES[res.data.user.role];
-      } catch {
-        // Fallback local switch
+      const loginRes = await loginWithCredentials(creds.email, creds.password);
+      if (loginRes.success) {
+        return loginRes.redirectPath;
       }
     }
-    const targetUser = data.users.find((u) => u.role === roleKey);
-    if (targetUser) {
-      setCurrentUser(targetUser);
-      showToast(`Switched active session to ${targetUser.fullName}`, 'info');
-      return ROLE_HOME_ROUTES[targetUser.role];
-    }
-    return '/';
+    return '/login';
   };
 
   const registerCustomer = async ({ fullName, email, phone, password }) => {
@@ -205,8 +264,9 @@ export function PlatformProvider({ children }) {
     }
     sessionStorage.removeItem('hs_access_token');
     sessionStorage.removeItem('hs_refresh_token');
+    sessionStorage.removeItem('hs_active_user');
     setCurrentUser(null);
-    showToast('You have been logged out and JWT token revoked.', 'info');
+    showToast('Signed out successfully. Please sign in with a role account.', 'info');
   };
 
   // --- HELPER GETTERS FOR CURRENT ROLE ---

@@ -13,7 +13,7 @@ import {
   UserCheck,
   Lock,
 } from 'lucide-react';
-import { usePlatform } from '../context/PlatformContext';
+import { usePlatform, DEMO_ROLE_CREDENTIALS } from '../context/PlatformContext';
 import { CategoryIcon } from '../components/common/UIComponents';
 import { formatCurrency } from '../utils/formatters';
 
@@ -341,6 +341,72 @@ export default function LandingPage() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Role-Based Authentication Portals & Visible Demo Credentials Section */}
+      <section className="border-t border-slate-200 bg-white py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-brand-600">
+                Role-Based Access Control (RBAC)
+              </p>
+              <h2 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+                4 Role-Authenticated Dashboards & Demo Credentials
+              </h2>
+              <p className="mt-1 text-xs text-slate-500">
+                Each dashboard requires role-specific authentication. Use the visible credentials below to test every workflow.
+              </p>
+            </div>
+            <Link to="/login" className="btn-primary text-xs">
+              Open Role Authentication Portal →
+            </Link>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {DEMO_ROLE_CREDENTIALS.map((cred) => (
+              <div
+                key={cred.role}
+                className="card-surface p-5 flex flex-col justify-between border-slate-200 hover:border-brand-300 transition"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="rounded-lg bg-slate-900 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                      {cred.roleTitle}
+                    </span>
+                    <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
+                      {cred.badge}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-sm font-bold text-slate-900">{cred.fullName}</p>
+                  <p className="mt-1 text-xs text-slate-500 leading-relaxed">{cred.description}</p>
+
+                  <div className="mt-3.5 rounded-xl border border-slate-200 bg-slate-50 p-2.5 space-y-1 text-xs font-mono">
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="text-[10px] font-sans font-bold uppercase text-slate-400">
+                        Email:
+                      </span>
+                      <span className="font-semibold text-slate-800 select-all">{cred.email}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-1 border-t border-slate-200/70 pt-1">
+                      <span className="text-[10px] font-sans font-bold uppercase text-slate-400">
+                        Pass:
+                      </span>
+                      <span className="font-bold text-brand-700 select-all">{cred.password}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <Link
+                  to={`/login?role=${cred.role}`}
+                  className="btn-primary mt-4 w-full py-2 text-xs text-center"
+                >
+                  Authenticate as {cred.roleTitle.split(' ')[0]} →
+                </Link>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
