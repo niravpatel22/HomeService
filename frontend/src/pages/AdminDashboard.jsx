@@ -242,39 +242,38 @@ export default function AdminDashboard() {
   });
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex bg-slate-100/70">
+    <div className="min-h-[calc(100vh-4rem)] flex items-start bg-slate-100/70">
       {/* Mobile Sidebar Backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-xs lg:hidden"
+          className="fixed inset-0 top-16 z-30 bg-slate-900/60 backdrop-blur-xs lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* ====================================================================
-          ENTERPRISE SAAS DARK LEFT SIDEBAR
+          ENTERPRISE SAAS DARK LEFT SIDEBAR (STICKY & ZERO BLANK GAP)
       ==================================================================== */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-slate-950 text-slate-300 flex flex-col border-r border-slate-800 transition-transform duration-200 lg:static lg:translate-x-0 shrink-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed top-16 bottom-0 left-0 z-40 w-72 bg-slate-950 text-slate-300 flex flex-col border-r border-slate-800 transition-transform duration-200 lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:self-start lg:z-20 lg:translate-x-0 shrink-0 overflow-y-auto ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         {/* Sidebar Top Header */}
-        <div className="p-5 border-b border-slate-800/90 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-indigo-600 text-white shadow-md">
-              <ShieldCheck className="h-5 w-5" />
+        <div className="px-4 py-3.5 border-b border-slate-800/90 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-indigo-600 text-white shadow-md shrink-0">
+              <ShieldCheck className="h-4 w-4" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-sm font-extrabold tracking-tight text-white">
-                  Admin Console
+                <span className="text-xs font-extrabold tracking-tight text-white">
+                  Super Admin Console
                 </span>
                 <span className="rounded bg-amber-400/20 px-1.5 py-0.5 text-[9px] font-extrabold uppercase text-amber-300 border border-amber-400/30">
                   PRO
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 mt-0.5">Platform Governance v2.4</p>
+              <p className="text-[10px] text-slate-400">Platform Governance v2.4</p>
             </div>
           </div>
           <button
@@ -282,95 +281,128 @@ export default function AdminDashboard() {
             onClick={() => setSidebarOpen(false)}
             className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 lg:hidden"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
-        {/* Live System Status Pill */}
-        <div className="px-4 pt-4">
-          <div className="rounded-xl border border-slate-800 bg-slate-900/90 px-3.5 py-2.5 flex items-center justify-between text-[11px]">
+        {/* Unified Compact Sidebar Body (No Stretched Blank Space) */}
+        <div className="p-3 space-y-3.5">
+          {/* Live System Status Pill */}
+          <div className="rounded-xl border border-slate-800 bg-slate-900/90 px-3 py-2 flex items-center justify-between text-[11px]">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="font-semibold text-slate-200">20 Core Tables Synced</span>
             </div>
             <span className="font-mono text-[10px] text-emerald-400">RBAC Active</span>
           </div>
-        </div>
 
-        {/* Sidebar Navigation Groups */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-          {navGroups.map((group) => (
-            <div key={group.group}>
-              <p className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">
-                {group.group}
-              </p>
-              <div className="space-y-1">
-                {group.items.map((item) => {
-                  const Icon = item.icon;
-                  const active = activeTab === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => {
-                        setActiveTab(item.id);
-                        setSidebarOpen(false);
-                      }}
-                      className={`w-full flex items-center justify-between gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold transition ${
-                        active
-                          ? 'bg-brand-600 text-white shadow-sm'
-                          : 'text-slate-400 hover:bg-slate-900 hover:text-white'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <Icon
-                          className={`h-4 w-4 shrink-0 ${
-                            active ? 'text-white' : 'text-slate-400'
+          {/* Sidebar Navigation Groups */}
+          <nav className="space-y-3">
+            {navGroups.map((group) => (
+              <div key={group.group} className="space-y-1">
+                <p className="px-2.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
+                  {group.group}
+                </p>
+                <div className="space-y-0.5">
+                  {group.items.map((item) => {
+                    const Icon = item.icon;
+                    const active = activeTab === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => {
+                          setActiveTab(item.id);
+                          setSidebarOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold transition ${active
+                            ? 'bg-brand-600 text-white shadow-xs'
+                            : 'text-slate-400 hover:bg-slate-900 hover:text-white'
                           }`}
-                        />
-                        <span className="truncate">{item.label}</span>
-                      </div>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-bold shrink-0 ${
-                          active ? 'bg-white/20 text-white' : item.badgeColor
-                        }`}
                       >
-                        {item.badge}
-                      </span>
-                    </button>
-                  );
-                })}
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <Icon
+                            className={`h-4 w-4 shrink-0 ${active ? 'text-white' : 'text-slate-400'
+                              }`}
+                          />
+                          <span className="truncate">{item.label}</span>
+                        </div>
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[10px] font-bold shrink-0 ${active ? 'bg-white/20 text-white' : item.badgeColor
+                            }`}
+                        >
+                          {item.badge}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
-        </nav>
+            ))}
+          </nav>
 
-        {/* Sidebar Footer: Admin Profile & Quick Utilities */}
-        <div className="p-4 border-t border-slate-800/90 space-y-3 bg-slate-950">
-          <div className="rounded-xl bg-slate-900 p-3 border border-slate-800">
-            <p className="text-xs font-bold text-white truncate">
-              {currentUser?.fullName || 'Vikramaditya Rao'}
+          {/* Quick Governance Creation Shortcuts */}
+          <div className="pt-2 border-t border-slate-800/80 space-y-1.5">
+            <p className="px-2.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
+              Quick Catalog & Promo Actions
             </p>
-            <p className="text-[11px] font-mono text-slate-400 truncate">
-              {currentUser?.email || 'admin@homeserve.com'}
-            </p>
+            <div className="grid grid-cols-3 gap-1.5">
+              <button
+                type="button"
+                onClick={() => setCatModalOpen(true)}
+                className="rounded-lg border border-slate-800 bg-slate-900/90 px-2 py-1.5 text-[10px] font-bold text-slate-300 hover:bg-slate-800 hover:text-white transition text-center whitespace-nowrap"
+              >
+                + Category
+              </button>
+              <button
+                type="button"
+                onClick={() => setSvcModalOpen(true)}
+                className="rounded-lg border border-slate-800 bg-slate-900/90 px-2 py-1.5 text-[10px] font-bold text-slate-300 hover:bg-slate-800 hover:text-white transition text-center whitespace-nowrap"
+              >
+                + Service
+              </button>
+              <button
+                type="button"
+                onClick={() => setCouponModalOpen(true)}
+                className="rounded-lg border border-slate-800 bg-slate-900/90 px-2 py-1.5 text-[10px] font-bold text-slate-300 hover:bg-slate-800 hover:text-white transition text-center whitespace-nowrap"
+              >
+                + Coupon
+              </button>
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={handleExportMasterCsv}
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-2.5 py-2 text-[11px] font-bold text-slate-200 hover:bg-slate-800 transition whitespace-nowrap"
-            >
-              <Download className="h-3.5 w-3.5 text-brand-400" /> Export CSV
-            </button>
-            <button
-              type="button"
-              onClick={resetDemoDatabase}
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-2.5 py-2 text-[11px] font-bold text-slate-300 hover:bg-slate-800 transition whitespace-nowrap"
-              title="Reset Demo Database to Initial Seed Data"
-            >
-              <RefreshCw className="h-3.5 w-3.5 text-amber-400" /> Reset DB
-            </button>
+
+          {/* Admin Profile & Quick Data Utilities */}
+          <div className="pt-2 border-t border-slate-800/90 space-y-2">
+            <div className="rounded-xl bg-slate-900 px-3 py-2.5 border border-slate-800 flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-white truncate">
+                  {currentUser?.fullName || 'Vikramaditya Rao'}
+                </p>
+                <p className="text-[10px] font-mono text-slate-400 truncate">
+                  {currentUser?.email || 'admin@homeserve.com'}
+                </p>
+              </div>
+              <span className="rounded bg-brand-500/20 px-1.5 py-0.5 text-[9px] font-bold text-brand-300 shrink-0">
+                Root
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-1.5">
+              <button
+                type="button"
+                onClick={handleExportMasterCsv}
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-2.5 py-1.5 text-[11px] font-bold text-slate-200 hover:bg-slate-800 transition whitespace-nowrap"
+              >
+                <Download className="h-3.5 w-3.5 text-brand-400" /> Export CSV
+              </button>
+              <button
+                type="button"
+                onClick={resetDemoDatabase}
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-2.5 py-1.5 text-[11px] font-bold text-slate-300 hover:bg-slate-800 transition whitespace-nowrap"
+                title="Reset Demo Database to Initial Seed Data"
+              >
+                <RefreshCw className="h-3.5 w-3.5 text-amber-400" /> Reset DB
+              </button>
+            </div>
           </div>
         </div>
       </aside>
@@ -806,11 +838,10 @@ export default function AdminDashboard() {
                       key={st}
                       type="button"
                       onClick={() => setProviderFilter(st)}
-                      className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${
-                        providerFilter === st
+                      className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${providerFilter === st
                           ? 'bg-slate-900 text-white'
                           : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-                      }`}
+                        }`}
                     >
                       {st === 'ALL' ? `All Providers (${totalProviders})` : st}
                     </button>
@@ -958,11 +989,10 @@ export default function AdminDashboard() {
                           <button
                             type="button"
                             onClick={() => toggleCustomerStatus(c.id)}
-                            className={`rounded-xl px-3 py-1.5 text-xs font-bold transition ${
-                              c.accountStatus === 'Active'
+                            className={`rounded-xl px-3 py-1.5 text-xs font-bold transition ${c.accountStatus === 'Active'
                                 ? 'border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
                                 : 'bg-emerald-600 text-white hover:bg-emerald-700'
-                            }`}
+                              }`}
                           >
                             {c.accountStatus === 'Active' ? 'Suspend Account' : 'Activate Account'}
                           </button>
@@ -1146,11 +1176,10 @@ export default function AdminDashboard() {
                       key={st}
                       type="button"
                       onClick={() => setBookingFilter(st)}
-                      className={`rounded-xl px-3 py-1.5 text-xs font-bold transition ${
-                        bookingFilter === st
+                      className={`rounded-xl px-3 py-1.5 text-xs font-bold transition ${bookingFilter === st
                           ? 'bg-slate-900 text-white'
                           : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-                      }`}
+                        }`}
                     >
                       {st}
                     </button>
@@ -1391,7 +1420,7 @@ export default function AdminDashboard() {
                               c.id,
                               'Resolved',
                               resolutionInputs[c.id] ||
-                                'Verified corrective action with provider and confirmed customer satisfaction.'
+                              'Verified corrective action with provider and confirmed customer satisfaction.'
                             )
                           }
                           className="rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition whitespace-nowrap"

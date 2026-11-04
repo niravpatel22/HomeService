@@ -28,16 +28,16 @@ export function MainHeader() {
 
   const userInitials = currentUser?.fullName
     ? currentUser.fullName
-        .split(' ')
-        .slice(0, 2)
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
+      .split(' ')
+      .slice(0, 2)
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
     : 'U';
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/90 bg-white/95 backdrop-blur-md shadow-2xs">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 border-b border-slate-200/90 bg-white/95 backdrop-blur-md shadow-xs">
+      <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         {/* Left: Brand Logo + Primary Navigation */}
         <div className="flex items-center gap-6 xl:gap-8 min-w-0">
           <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
@@ -59,10 +59,9 @@ export function MainHeader() {
               to="/"
               end
               className={({ isActive }) =>
-                `whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-                  isActive
-                    ? 'bg-brand-50 text-brand-700'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                `whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold transition ${isActive
+                  ? 'bg-brand-50 text-brand-700'
+                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                 }`
               }
             >
@@ -71,10 +70,9 @@ export function MainHeader() {
             <NavLink
               to="/services"
               className={({ isActive }) =>
-                `whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-                  isActive
-                    ? 'bg-brand-50 text-brand-700'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                `whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold transition ${isActive
+                  ? 'bg-brand-50 text-brand-700'
+                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                 }`
               }
             >
@@ -83,10 +81,9 @@ export function MainHeader() {
             <NavLink
               to="/register/provider"
               className={({ isActive }) =>
-                `whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-                  isActive
-                    ? 'bg-brand-50 text-brand-700'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                `whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold transition ${isActive
+                  ? 'bg-brand-50 text-brand-700'
+                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                 }`
               }
             >
@@ -96,10 +93,9 @@ export function MainHeader() {
               <NavLink
                 to={ROLE_HOME_ROUTES[currentUser.role]}
                 className={({ isActive }) =>
-                  `whitespace-nowrap inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-                    isActive
-                      ? 'bg-slate-900 text-white shadow-2xs'
-                      : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
+                  `whitespace-nowrap inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition ${isActive
+                    ? 'bg-slate-900 text-white shadow-2xs'
+                    : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
                   }`
                 }
               >
@@ -150,11 +146,10 @@ export function MainHeader() {
                     roleNotifications.map((item) => (
                       <div
                         key={item.id}
-                        className={`rounded-xl border p-3 text-xs transition ${
-                          item.isRead
+                        className={`rounded-xl border p-3 text-xs transition ${item.isRead
                             ? 'border-slate-100 bg-slate-50/60 text-slate-600'
                             : 'border-brand-100 bg-brand-50/50 text-slate-900'
-                        }`}
+                          }`}
                       >
                         <p className="font-semibold text-slate-900">{item.title}</p>
                         <p className="mt-1 text-slate-600 leading-relaxed">{item.message}</p>
