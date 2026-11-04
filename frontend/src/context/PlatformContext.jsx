@@ -4,7 +4,7 @@ import { ROLE_HOME_ROUTES } from '../constants';
 import apiClient from '../services/apiClient';
 
 const PlatformContext = createContext(null);
-const PERSISTENT_DB_KEY = 'hs_persistent_database_v2';
+const PERSISTENT_DB_KEY = 'hs_persistent_database_v3';
 
 export const DEMO_ROLE_CREDENTIALS = [
   {
@@ -483,12 +483,12 @@ export function PlatformProvider({ children }) {
         await syncWithBackend();
         if (paymentScenario === 'FAILED') {
           showToast(
-            `Webhook 'payment.failed' processed for ${res.data.bookingNumber}. Booking saved with Failed payment status — you can retry payment now!`,
+            `Payment declined by bank for ${res.data.bookingNumber}. You can complete payment anytime from your booking page.`,
             'error'
           );
         } else {
           showToast(
-            `Booking ${res.data.bookingNumber} persisted & Razorpay payment.captured webhook verified!`,
+            `Payment Successful! Booking #${res.data.bookingNumber} is confirmed & GST receipt generated.`,
             'success'
           );
         }
@@ -671,12 +671,12 @@ export function PlatformProvider({ children }) {
 
     if (isPaymentFailed) {
       showToast(
-        `Webhook 'payment.failed' processed for ${bookingNumber}. Booking saved with Failed payment status — you can retry payment now!`,
+        `Payment declined by bank for ${bookingNumber}. You can complete payment anytime from your booking page.`,
         'error'
       );
     } else {
       showToast(
-        `Webhook 'payment.captured' verified (${webhookSignature.slice(0, 20)}...)! Booking ${bookingNumber} confirmed.`,
+        `Payment Successful! Booking #${bookingNumber} is confirmed & GST receipt generated.`,
         'success'
       );
     }
@@ -789,12 +789,12 @@ export function PlatformProvider({ children }) {
 
     if (isFail) {
       showToast(
-        `Razorpay Webhook 'payment.failed' processed! Booking #${target.bookingNumber} marked as Failed.`,
+        `Payment could not be completed for Booking #${target.bookingNumber}. Please retry.`,
         'error'
       );
     } else {
       showToast(
-        `Razorpay Webhook 'payment.captured' verified! Booking #${target.bookingNumber} is now 100% Paid.`,
+        `Payment Completed Successfully! Booking #${target.bookingNumber} is now 100% Paid.`,
         'success'
       );
     }

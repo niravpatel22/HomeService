@@ -6,12 +6,21 @@
 
   html,
   body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: #f8faf9;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+    letter-spacing: -0.02em;
   }
 }
 
 /* ============================================================================
-   THEME-BASED CUSTOM SCROLLBARS (CHROME / EDGE / SAFARI + FIREFOX FALLBACK)
+   THEME-BASED CUSTOM SCROLLBARS (ROYAL EMERALD-TEAL CONCIERGE EDITION)
    Note: Do not set unscoped scrollbar-width/scrollbar-color on WebKit/Blink,
    as Chromium 121+ disables ::-webkit-scrollbar when those properties exist.
 ============================================================================ */
@@ -27,12 +36,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #6366f1 0%, #4338ca 100%);
+  background: linear-gradient(180deg, #14b8a6 0%, #0f766e 100%);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #4f46e5;
+  background: #0d9488;
 }
 
 /* Dark Enterprise Sidebar Theme Scrollbar */
@@ -47,13 +56,13 @@
 }
 
 .sidebar-theme-scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #6366f1 0%, #3730a3 100%);
+  background: linear-gradient(180deg, #14b8a6 0%, #0f766e 100%);
   border-radius: 9999px;
   border: 1px solid #0f172a;
 }
 
 .sidebar-theme-scroll::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #818cf8 0%, #4f46e5 100%);
+  background: linear-gradient(180deg, #2dd4bf 0%, #0d9488 100%);
 }
 
 /* Main Dashboard Workspace Theme Scrollbar */
@@ -67,46 +76,46 @@
 }
 
 .workspace-theme-scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #6366f1 0%, #4338ca 100%);
+  background: linear-gradient(180deg, #14b8a6 0%, #0f766e 100%);
   border-radius: 9999px;
   border: 1.5px solid #f1f5f9;
 }
 
 .workspace-theme-scroll::-webkit-scrollbar-thumb:hover {
-  background: #4f46e5;
+  background: #0d9488;
 }
 
 @supports not selector(::-webkit-scrollbar) {
   .sidebar-theme-scroll {
     scrollbar-width: thin;
-    scrollbar-color: #4f46e5 #020617;
+    scrollbar-color: #0d9488 #020617;
   }
 
   .workspace-theme-scroll {
     scrollbar-width: thin;
-    scrollbar-color: #4f46e5 #f1f5f9;
+    scrollbar-color: #0d9488 #f1f5f9;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-brand-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:from-brand-700 hover:to-brand-800 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:border-brand-300 hover:bg-brand-50/40 hover:text-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .input-field {
-    @apply block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 shadow-sm transition focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/20 disabled:bg-slate-100;
+    @apply block w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 shadow-sm transition focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/20 disabled:bg-slate-100;
   }
 
   .card-surface {
-    @apply rounded-xl border border-slate-200/80 bg-white shadow-sm;
+    @apply rounded-2xl border border-slate-200/80 bg-white shadow-[0_2px_16px_-4px_rgba(15, 23, 42, 0.06)];
   }
 }
 

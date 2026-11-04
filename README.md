@@ -407,3 +407,6 @@ Development strictly follows the **9 sequential phases** with mandatory user val
 | *Docs* | **Documentation & Presentation** | Comprehensive Technical Docs, AI Prompts & Development Log, Final Presentation | **10 Marks** |
 | **TOTAL** | | | **100 Marks** |
 
+render: rnd_5VaB8vd7L2BOXd4DSni9AiCX9SQf
+
+this is render api key and connect and upload all to render and connecet to netlify byyoursefl and then once done inform this si api key : rnd_5VaB8vd7L2BOXd4DSni9AiCX9SQf

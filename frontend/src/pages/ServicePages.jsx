@@ -28,7 +28,7 @@ export function ServiceListingPage() {
   const [minRating, setMinRating] = useState(0);
   const [sortBy, setSortBy] = useState('popular');
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 6;
+  const pageSize = 8;
 
   const filteredServices = useMemo(() => {
     return data.services
@@ -65,8 +65,8 @@ export function ServiceListingPage() {
   );
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900 sm:text-3xl">
             Explore Verified Home Services
@@ -102,12 +102,12 @@ export function ServiceListingPage() {
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12">
-        {/* Sidebar Filters */}
-        <aside className="lg:col-span-3 space-y-6">
-          <div className="card-surface p-5 space-y-5">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+      <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
+        {/* Sidebar Filters (Sticky while scrolling right results & fits viewport cleanly) */}
+        <aside className="lg:col-span-3 lg:sticky lg:top-20 lg:self-start">
+          <div className="card-surface p-4 space-y-3.5 shadow-sm">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+              <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-1.5">
                 <Filter className="h-4 w-4 text-brand-600" /> Filter Services
               </h3>
               <button
@@ -119,30 +119,37 @@ export function ServiceListingPage() {
                   setQuery('');
                   setSearchParams({});
                 }}
-                className="text-xs font-semibold text-brand-600 hover:underline"
+                className="text-xs font-bold text-brand-600 hover:underline"
               >
                 Reset
               </button>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5">
                 Service Category
               </label>
-              <div className="space-y-1.5">
+              <div className="space-y-0.5">
                 <button
                   type="button"
                   onClick={() => {
                     setSelectedCategory('all');
                     setCurrentPage(1);
                   }}
-                  className={`w-full rounded-lg px-3 py-2 text-left text-xs font-semibold transition ${
-                    selectedCategory === 'all'
-                      ? 'bg-brand-600 text-white'
+                  className={`w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition flex items-center justify-between ${selectedCategory === 'all'
+                      ? 'bg-brand-600 text-white shadow-xs'
                       : 'text-slate-600 hover:bg-slate-100'
-                  }`}
+                    }`}
                 >
-                  All Categories ({data.services.length})
+                  <span>All Categories</span>
+                  <span
+                    className={`rounded-full px-1.5 py-0.2 text-[10px] font-bold ${selectedCategory === 'all'
+                        ? 'bg-white/20 text-white'
+                        : 'bg-slate-100 text-slate-500'
+                      }`}
+                  >
+                    {data.services.length}
+                  </span>
                 </button>
                 {data.categories.map((cat) => (
                   <button
@@ -152,11 +159,10 @@ export function ServiceListingPage() {
                       setSelectedCategory(String(cat.id));
                       setCurrentPage(1);
                     }}
-                    className={`w-full rounded-lg px-3 py-2 text-left text-xs font-semibold transition ${
-                      String(selectedCategory) === String(cat.id)
-                        ? 'bg-brand-600 text-white'
+                    className={`w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition ${String(selectedCategory) === String(cat.id)
+                        ? 'bg-brand-600 text-white shadow-xs'
                         : 'text-slate-600 hover:bg-slate-100'
-                    }`}
+                      }`}
                   >
                     {cat.name}
                   </button>
@@ -164,10 +170,10 @@ export function ServiceListingPage() {
               </div>
             </div>
 
-            <div>
+            <div className="border-t border-slate-100 pt-2.5">
               <div className="flex items-center justify-between text-xs font-semibold text-slate-700 mb-1">
                 <span>Max Price</span>
-                <span className="text-brand-600 font-bold">{formatCurrency(maxPrice)}</span>
+                <span className="text-brand-600 font-extrabold">{formatCurrency(maxPrice)}</span>
               </div>
               <input
                 type="range"
@@ -176,23 +182,37 @@ export function ServiceListingPage() {
                 step={100}
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(Number(e.target.value))}
-                className="w-full accent-brand-600"
+                className="w-full accent-brand-600 cursor-pointer"
               />
+              <div className="flex justify-between text-[10px] text-slate-400">
+                <span>₹400</span>
+                <span>₹5,000</span>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+            <div className="border-t border-slate-100 pt-2.5">
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5">
                 Minimum Rating
               </label>
-              <select
-                value={minRating}
-                onChange={(e) => setMinRating(Number(e.target.value))}
-                className="input-field text-xs"
-              >
-                <option value={0}>All Ratings</option>
-                <option value={4.5}>4.5 ★ & above</option>
-                <option value={4.8}>4.8 ★ & above</option>
-              </select>
+              <div className="grid grid-cols-3 gap-1.5">
+                {[
+                  { val: 0, label: 'All' },
+                  { val: 4.5, label: '4.5 ★+' },
+                  { val: 4.8, label: '4.8 ★+' },
+                ].map((opt) => (
+                  <button
+                    key={opt.val}
+                    type="button"
+                    onClick={() => setMinRating(opt.val)}
+                    className={`rounded-lg border py-1.5 text-center text-xs font-bold transition ${minRating === opt.val
+                        ? 'border-brand-600 bg-brand-50 text-brand-700'
+                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                      }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </aside>
@@ -390,11 +410,10 @@ export function ServiceDetailPage() {
                     <button
                       type="button"
                       onClick={() => toggleFavoriteProvider(prov.id)}
-                      className={`rounded-lg border p-2 transition ${
-                        isFav
+                      className={`rounded-lg border p-2 transition ${isFav
                           ? 'border-rose-200 bg-rose-50 text-rose-600'
                           : 'border-slate-200 text-slate-400 hover:text-rose-600'
-                      }`}
+                        }`}
                       title="Save to Favorite Providers"
                     >
                       <Heart className={`h-4 w-4 ${isFav ? 'fill-rose-600' : ''}`} />

@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const SEED_DATA = require('./seedData.json');
 
-const TMP_DB_PATH = '/tmp/homeserve_cloud_db_v2.json';
+const TMP_DB_PATH = '/tmp/homeserve_cloud_db_v3.json';
 const JWT_SECRET = process.env.JWT_SECRET_KEY || 'hs_prod_jwt_secret_key_2026_netlify_cloud';
 const WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || 'whsec_HomeServeWebhookSecret2026';
 

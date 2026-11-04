@@ -46,6 +46,10 @@ export function BookingCheckoutPage() {
   const [addrModalOpen, setAddrModalOpen] = useState(false);
   const [razorpayModalOpen, setRazorpayModalOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('UPI (Google Pay / PhonePe)');
+  const [upiId, setUpiId] = useState('aarav.mehta@okaxis');
+  const [selectedBank, setSelectedBank] = useState('HDFC Bank');
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [paymentSuccessStage, setPaymentSuccessStage] = useState(false);
   const [rzpGatewayError, setRzpGatewayError] = useState('');
   const [newAddr, setNewAddr] = useState({
     label: 'Home',
@@ -128,8 +132,17 @@ export function BookingCheckoutPage() {
     setRazorpayModalOpen(true);
   };
 
-  const handleExecuteRazorpayScenario = async (scenario) => {
+  const handleExecuteRazorpayScenario = async (scenario = 'SUCCESS') => {
     setRzpGatewayError('');
+    setIsProcessingPayment(true);
+    setPaymentSuccessStage(false);
+
+    if (scenario === 'SUCCESS') {
+      await new Promise((r) => setTimeout(r, 550));
+      setPaymentSuccessStage(true);
+      await new Promise((r) => setTimeout(r, 650));
+    }
+
     const res = await createBooking({
       serviceId: service.id,
       providerId: selectedProvider.id,
@@ -141,11 +154,14 @@ export function BookingCheckoutPage() {
       couponCode: appliedCoupon?.code || null,
       paymentType,
       problemImageUrls: uploadedImageName
-        ? ['https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80']
+        ? ['/assets/services/electrical-inspection.jpg']
         : [],
       paymentScenario: scenario,
       paymentMethod,
     });
+
+    setIsProcessingPayment(false);
+    setPaymentSuccessStage(false);
 
     if (!res.success) {
       setRzpGatewayError(res.error);
@@ -156,7 +172,7 @@ export function BookingCheckoutPage() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-6">
         <Link
           to={`/services/${service.id}`}
@@ -165,10 +181,10 @@ export function BookingCheckoutPage() {
           <ArrowLeft className="h-4 w-4" /> Back to {service.name}
         </Link>
         <h1 className="mt-2 text-2xl font-extrabold text-slate-900 sm:text-3xl">
-          Book Appointment & Razorpay Sandbox Checkout
+          Schedule Your Home Service Appointment
         </h1>
         <p className="text-xs text-slate-500">
-          Real-time slot conflict check • Server-side price calculation • Instant booking confirmation
+          Verified background-checked professionals • Instant slot confirmation • 100% service warranty
         </p>
       </div>
 
@@ -373,9 +389,9 @@ export function BookingCheckoutPage() {
           </div>
         </div>
 
-        {/* Right Checkout & Razorpay Payment Summary */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="card-surface p-6 space-y-5 sticky top-24">
+        {/* Right Checkout & Payment Summary (Sticky while scrolling) */}
+        <div className="lg:col-span-4 lg:sticky lg:top-20 lg:self-start space-y-6">
+          <div className="card-surface p-6 space-y-5">
             <h3 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">
               Booking & Payment Summary
             </h3>
@@ -419,7 +435,7 @@ export function BookingCheckoutPage() {
             {/* Payment Option: Full vs 25% Advance */}
             <div className="space-y-2">
               <label className="block text-xs font-bold text-slate-700">
-                Select Payment Option (Razorpay Test Mode)
+                Choose Payment Plan
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <button
@@ -470,13 +486,13 @@ export function BookingCheckoutPage() {
                 <span>{formatCurrency(totalAmount)}</span>
               </div>
               <div className="flex justify-between text-xs font-bold text-brand-600">
-                <span>Payable Now ({paymentType})</span>
+                <span>Payable Now ({paymentType === 'FULL' ? '100% Full' : '25% Advance'})</span>
                 <span>{formatCurrency(payableNow)}</span>
               </div>
             </div>
 
-            <button type="submit" className="btn-primary w-full py-3 text-sm">
-              <CreditCard className="h-4 w-4" /> Pay {formatCurrency(payableNow)} & Confirm Booking
+            <button type="submit" className="btn-primary w-full py-3 text-sm shadow-md">
+              <CreditCard className="h-4 w-4" /> Proceed to Pay {formatCurrency(payableNow)}
             </button>
           </div>
         </div>
@@ -549,121 +565,212 @@ export function BookingCheckoutPage() {
         </div>
       </Modal>
 
-      {/* Interactive Razorpay Checkout & Webhook Simulator Modal */}
+      {/* Customer-Friendly Secure Online Payment Modal */}
       <Modal
         isOpen={razorpayModalOpen}
-        onClose={() => setRazorpayModalOpen(false)}
-        title="Razorpay Sandbox Checkout & Webhook Simulator"
+        onClose={() => {
+          if (!isProcessingPayment) setRazorpayModalOpen(false);
+        }}
+        title="Razorpay Secure Checkout"
       >
-        <div className="space-y-4">
-          <div className="rounded-xl bg-slate-900 p-4 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-brand-300">
-                  Razorpay Test Gateway (HMAC-SHA256)
-                </span>
-                <h4 className="text-sm font-bold mt-0.5">HomeServe Technologies Pvt. Ltd.</h4>
-              </div>
-              <div className="text-right">
-                <span className="text-[10px] text-slate-400 block">Payable Now</span>
-                <span className="text-lg font-extrabold text-emerald-400">
-                  {formatCurrency(payableNow)}
-                </span>
-              </div>
+        {paymentSuccessStage ? (
+          <div className="py-8 text-center space-y-4">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 shadow-inner">
+              <CheckCircle2 className="h-10 w-10" />
             </div>
-            <div className="mt-3 pt-2.5 border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-300">
-              <span>Order: order_RzpTest_{Date.now().toString().slice(-5)}</span>
-              <span>Mode: {paymentType}</span>
+            <div>
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-extrabold text-emerald-700 border border-emerald-200">
+                ✓ Payment Completed Successfully
+              </span>
+              <h4 className="mt-2 text-xl font-extrabold text-slate-900">
+                {formatCurrency(payableNow)} Paid!
+              </h4>
+              <p className="mt-1 text-xs text-slate-500">
+                Your payment has been verified and your service appointment with{' '}
+                <strong>{selectedProvider.businessName}</strong> is confirmed.
+              </p>
             </div>
           </div>
-
-          {rzpGatewayError && (
-            <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-semibold text-rose-700">
-              {rzpGatewayError}
+        ) : (
+          <div className="space-y-4">
+            {/* Merchant & Payable Header */}
+            <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-4 text-white shadow-md">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-white font-extrabold shadow-xs">
+                    <ShieldCheck className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <h4 className="text-sm font-extrabold">HomeServe Technologies</h4>
+                      <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-300 border border-emerald-500/30">
+                        ✓ Verified
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-300 truncate max-w-[210px]">
+                      {service.name}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] uppercase tracking-wider text-slate-400 block">
+                    Amount to Pay
+                  </span>
+                  <span className="text-xl font-extrabold text-emerald-400">
+                    {formatCurrency(payableNow)}
+                  </span>
+                </div>
+              </div>
+              <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-300">
+                <span>
+                  Slot: {scheduledDate} • {selectedSlot.label}
+                </span>
+                <span className="font-semibold text-brand-300">
+                  {paymentType === 'FULL' ? '100% Full Payment' : '25% Advance Booking'}
+                </span>
+              </div>
             </div>
-          )}
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              Select Payment Instrument
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                'UPI (GPay / PhonePe)',
-                'Credit / Debit Card',
-                'Netbanking (HDFC/ICICI)',
-              ].map((m) => (
+            {rzpGatewayError && (
+              <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-semibold text-rose-700 flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                <span>{rzpGatewayError}</span>
+              </div>
+            )}
+
+            {/* Payment Instrument Tabs */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-2">
+                Choose Your Preferred Payment Method
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { id: 'UPI (Google Pay / PhonePe)', label: 'UPI / QR', sub: 'GPay, PhonePe' },
+                  { id: 'Credit / Debit Card', label: 'Card', sub: 'Visa, RuPay' },
+                  { id: 'Netbanking', label: 'Netbanking', sub: 'All Banks' },
+                ].map((m) => {
+                  const active = paymentMethod === m.id;
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setPaymentMethod(m.id)}
+                      className={`rounded-xl border p-2.5 text-left transition ${active
+                        ? 'border-brand-600 bg-brand-50/80 text-brand-800 ring-2 ring-brand-500/15'
+                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                        }`}
+                    >
+                      <span className="block text-xs font-extrabold">{m.label}</span>
+                      <span className="block text-[10px] text-slate-500 mt-0.5">{m.sub}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Interactive Instrument Details Box */}
+            <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 space-y-3">
+              {paymentMethod === 'UPI (Google Pay / PhonePe)' && (
+                <div className="space-y-2.5">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {['Google Pay', 'PhonePe', 'Paytm', 'BHIM UPI'].map((app) => (
+                      <span
+                        key={app}
+                        className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-bold text-slate-700 shadow-2xs"
+                      >
+                        {app}
+                      </span>
+                    ))}
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                      UPI ID / VPA
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={upiId}
+                        onChange={(e) => setUpiId(e.target.value)}
+                        className="input-field py-1.5 text-xs"
+                        placeholder="yourname@okaxis"
+                      />
+                      <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2.5 py-1.5 text-[11px] font-bold text-emerald-700 border border-emerald-200 shrink-0">
+                        ✓ Verified
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {paymentMethod === 'Credit / Debit Card' && (
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase text-slate-400 block">
+                        Saved Visa Platinum Card
+                      </span>
+                      <span className="font-mono font-bold text-slate-800">
+                        4111 •••• •••• 1111
+                      </span>
+                    </div>
+                    <span className="rounded bg-brand-50 px-2 py-0.5 text-[10px] font-bold text-brand-700">
+                      Exp 08/29 • CVV ✓
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {paymentMethod === 'Netbanking' && (
+                <div className="grid grid-cols-2 gap-2">
+                  {['HDFC Bank', 'ICICI Bank', 'State Bank of India', 'Axis Bank'].map((bank) => (
+                    <button
+                      key={bank}
+                      type="button"
+                      onClick={() => setSelectedBank(bank)}
+                      className={`rounded-lg border px-3 py-2 text-left text-xs font-bold transition ${selectedBank === bank
+                        ? 'border-brand-600 bg-white text-brand-700 shadow-2xs'
+                        : 'border-slate-200 bg-white/60 text-slate-600'
+                        }`}
+                    >
+                      {bank}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Primary 1-Click Pay Button */}
+            <div className="pt-1 space-y-2.5">
+              <button
+                type="button"
+                disabled={isProcessingPayment}
+                onClick={() => handleExecuteRazorpayScenario('SUCCESS')}
+                className="w-full rounded-xl bg-emerald-600 px-4 py-3.5 text-center text-sm font-extrabold text-white shadow-md hover:bg-emerald-700 transition flex items-center justify-center gap-2 disabled:opacity-60"
+              >
+                <CheckCircle2 className="h-5 w-5" />
+                <span>
+                  {isProcessingPayment
+                    ? 'Processing Secure Payment...'
+                    : `Pay ${formatCurrency(payableNow)} & Confirm Booking`}
+                </span>
+              </button>
+
+              <div className="flex items-center justify-between text-[11px] text-slate-400 px-1">
+                <span className="inline-flex items-center gap-1">
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> 100% Secured by Razorpay
+                  256-Bit Encryption
+                </span>
                 <button
-                  key={m}
                   type="button"
-                  onClick={() => setPaymentMethod(m)}
-                  className={`rounded-lg border p-2 text-[11px] font-semibold transition ${paymentMethod === m
-                      ? 'border-brand-600 bg-brand-50 text-brand-700'
-                      : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                    }`}
+                  onClick={() => handleExecuteRazorpayScenario('FAILED')}
+                  className="text-[11px] font-semibold text-slate-400 hover:text-rose-600 underline"
                 >
-                  {m}
+                  Simulate Bank Decline
                 </button>
-              ))}
+              </div>
             </div>
           </div>
-
-          <div className="space-y-2.5 pt-2 border-t border-slate-200">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Choose Webhook & Payment Outcome to Simulate:
-            </p>
-
-            {/* 1. Payment Success Webhook */}
-            <button
-              type="button"
-              onClick={() => handleExecuteRazorpayScenario('SUCCESS')}
-              className="w-full rounded-xl bg-emerald-600 px-4 py-3 text-left text-white shadow-xs hover:bg-emerald-700 transition flex items-center justify-between"
-            >
-              <div>
-                <span className="text-xs font-extrabold block">
-                  ✓ Simulate Payment Success (payment.captured Webhook)
-                </span>
-                <span className="text-[11px] text-emerald-100 block mt-0.5">
-                  Verifies HMAC-SHA256 X-Razorpay-Signature, marks Paid & generates GST Invoice
-                </span>
-              </div>
-              <CheckCircle2 className="h-5 w-5 shrink-0" />
-            </button>
-
-            {/* 2. Payment Failed Webhook */}
-            <button
-              type="button"
-              onClick={() => handleExecuteRazorpayScenario('FAILED')}
-              className="w-full rounded-xl border border-rose-300 bg-rose-50 px-4 py-3 text-left text-rose-900 hover:bg-rose-100 transition flex items-center justify-between"
-            >
-              <div>
-                <span className="text-xs font-extrabold block text-rose-700">
-                  ✕ Simulate Payment Failure (payment.failed Webhook)
-                </span>
-                <span className="text-[11px] text-rose-600 block mt-0.5">
-                  Simulates bank decline callback, marks booking Payment Failed & enables Retry Payment
-                </span>
-              </div>
-              <AlertTriangle className="h-5 w-5 text-rose-600 shrink-0" />
-            </button>
-
-            {/* 3. Tampered Webhook Signature */}
-            <button
-              type="button"
-              onClick={() => handleExecuteRazorpayScenario('TAMPERED_SIGNATURE')}
-              className="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-left text-slate-700 hover:bg-slate-100 transition flex items-center justify-between"
-            >
-              <div>
-                <span className="text-xs font-bold block">
-                  🛡️ Test Forged Signature Attack (Invalid X-Razorpay-Signature)
-                </span>
-                <span className="text-[11px] text-slate-500 block">
-                  Verifies backend rejects tampered HMAC-SHA256 signature with HTTP 400
-                </span>
-              </div>
-            </button>
-          </div>
-        </div>
+        )}
       </Modal>
     </div>
   );
@@ -758,6 +865,65 @@ export function BookingTrackingPage() {
         </div>
       </div>
 
+      {/* Prominent User-Friendly Payment Confirmation Banner */}
+      {booking.paymentStatus === 'Paid' || booking.paymentStatus === 'Partially Paid' ? (
+        <div className="rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 via-teal-50/70 to-emerald-50 p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-sm">
+              <CheckCircle2 className="h-6 w-6" />
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-base font-extrabold text-emerald-950">
+                  Payment Completed Successfully!
+                </h2>
+                <span className="rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-white">
+                  ✓ Verified Receipt
+                </span>
+              </div>
+              <p className="mt-0.5 text-xs text-emerald-800">
+                We received <strong>{formatCurrency(booking.paidAmount)}</strong> via Razorpay Secure
+                Checkout (Ref:{' '}
+                <span className="font-mono font-semibold">
+                  {booking.razorpayPaymentId || `pay_Rzp_${booking.id}`}
+                </span>
+                ). Your service slot is confirmed.
+              </p>
+            </div>
+          </div>
+          <Link
+            to={`/invoices/${booking.id}`}
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-extrabold text-white shadow-xs hover:bg-emerald-800 transition shrink-0"
+          >
+            <Printer className="h-4 w-4" /> Download GST Receipt
+          </Link>
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-rose-200 bg-rose-50/90 p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-600 text-white shadow-sm">
+              <AlertTriangle className="h-6 w-6" />
+            </div>
+            <div>
+              <h2 className="text-base font-extrabold text-rose-950">
+                Payment Pending ({formatCurrency(booking.pendingAmount)})
+              </h2>
+              <p className="mt-0.5 text-xs text-rose-800">
+                Your booking slot is reserved. Complete your payment securely below to generate your
+                verified GST receipt.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => settleBalancePayment(booking.id)}
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-extrabold text-white shadow-xs hover:bg-emerald-700 transition shrink-0"
+          >
+            <CreditCard className="h-4 w-4" /> Pay {formatCurrency(booking.pendingAmount)} Now
+          </button>
+        </div>
+      )}
+
       {/* Live Visual Progress Stepper */}
       <div className="card-surface p-6">
         <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
@@ -792,7 +958,7 @@ export function BookingTrackingPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-start">
         {/* Left Details */}
         <div className="lg:col-span-8 space-y-6">
           <div className="card-surface p-6 space-y-4">
@@ -921,11 +1087,14 @@ export function BookingTrackingPage() {
           )}
         </div>
 
-        {/* Right Payment Breakdown */}
-        <div className="lg:col-span-4 space-y-6">
+        {/* Right Payment Breakdown & Verified Receipt (Sticky while scrolling) */}
+        <div className="lg:col-span-4 lg:sticky lg:top-20 lg:self-start space-y-6">
           <div className="card-surface p-6 space-y-4">
-            <h3 className="text-base font-bold text-slate-900">Financial & Payment Ledger</h3>
-            <div className="space-y-2 text-xs">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-base font-bold text-slate-900">Payment & Billing Summary</h3>
+              <StatusBadge status={booking.paymentStatus} />
+            </div>
+            <div className="space-y-2.5 text-xs">
               <div className="flex justify-between text-slate-600">
                 <span>Service Charge</span>
                 <span className="font-semibold text-slate-900">
@@ -937,119 +1106,105 @@ export function BookingTrackingPage() {
                 <span>-{formatCurrency(booking.discountAmount)}</span>
               </div>
               <div className="flex justify-between text-slate-600">
-                <span>GST (18%)</span>
+                <span>GST & Taxes (18%)</span>
                 <span>{formatCurrency(booking.taxAmount)}</span>
               </div>
-              <div className="flex justify-between border-t border-slate-200 pt-2 text-sm font-extrabold text-slate-900">
+              <div className="flex justify-between border-t border-slate-200 pt-2.5 text-sm font-extrabold text-slate-900">
                 <span>Total Invoice Amount</span>
                 <span>{formatCurrency(booking.totalAmount)}</span>
               </div>
-              <div className="flex justify-between text-emerald-700 font-semibold">
+              <div className="flex justify-between text-emerald-700 font-bold">
                 <span>Amount Paid</span>
                 <span>{formatCurrency(booking.paidAmount)}</span>
               </div>
-              <div className="flex justify-between text-amber-700 font-semibold">
-                <span>Balance Pending</span>
-                <span>{formatCurrency(booking.pendingAmount)}</span>
+              <div className="flex justify-between text-slate-600 font-semibold">
+                <span>Balance Due</span>
+                <span className={booking.pendingAmount > 0 ? 'text-amber-700 font-bold' : 'text-emerald-700'}>
+                  {formatCurrency(booking.pendingAmount)}
+                </span>
               </div>
             </div>
 
-            {booking.pendingAmount > 0 && (
+            {booking.pendingAmount > 0 ? (
               <button
                 type="button"
                 onClick={() => settleBalancePayment(booking.id)}
-                className="btn-primary w-full text-xs py-2.5"
+                className="w-full rounded-xl bg-emerald-600 px-4 py-3 text-xs font-extrabold text-white shadow-xs hover:bg-emerald-700 transition flex items-center justify-center gap-2"
               >
-                {booking.paymentStatus === 'Failed'
-                  ? `Retry Failed Payment (${formatCurrency(booking.pendingAmount)}) via Razorpay`
-                  : `Pay Pending Balance (${formatCurrency(booking.pendingAmount)}) via Razorpay`}
+                <CreditCard className="h-4 w-4" />
+                <span>
+                  {booking.paymentStatus === 'Failed'
+                    ? `Complete Payment Now (${formatCurrency(booking.pendingAmount)})`
+                    : `Pay Remaining Balance (${formatCurrency(booking.pendingAmount)})`}
+                </span>
               </button>
+            ) : (
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50/80 px-3.5 py-2.5 flex items-center gap-2 text-xs font-bold text-emerald-800">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                <span>100% Paid — Zero Balance Pending</span>
+              </div>
             )}
           </div>
 
-          {/* Razorpay Webhook & Signature Verification Console */}
+          {/* Customer-Friendly Verified Payment & Security Receipt Card */}
           <div className="card-surface p-6 space-y-4 border-slate-200">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-600 block">
-                  POST /api/v1/payments/webhook
-                </span>
-                <h3 className="text-sm font-extrabold text-slate-900">
-                  Razorpay Webhook & Signature Simulator
-                </h3>
-              </div>
-              <StatusBadge status={booking.paymentStatus} />
-            </div>
-
-            <div className="rounded-xl bg-slate-900 p-3.5 text-[11px] font-mono text-slate-300 space-y-1">
-              <div className="flex justify-between">
-                <span className="text-slate-400">Order ID:</span>
-                <span className="text-white">{booking.razorpayOrderId || `order_RzpTest_${booking.id}`}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Payment ID:</span>
-                <span className="text-emerald-400">{booking.razorpayPaymentId || `pay_RzpTest_${booking.id}`}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">HMAC Header:</span>
-                <span className="text-amber-300">X-Razorpay-Signature (SHA256)</span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                Trigger Live Webhook Events:
-              </p>
-              <button
-                type="button"
-                onClick={() => simulateRazorpayWebhook(booking.id, 'SUCCESS')}
-                className="w-full rounded-xl bg-emerald-600 px-3 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition"
-              >
-                ✓ Trigger payment.captured Webhook (Mark Paid)
-              </button>
-              <button
-                type="button"
-                onClick={() => simulateRazorpayWebhook(booking.id, 'FAILED')}
-                className="w-full rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 hover:bg-rose-100 transition"
-              >
-                ✕ Trigger payment.failed Webhook (Simulate Failure)
-              </button>
-              <button
-                type="button"
-                onClick={() => simulateRazorpayWebhook(booking.id, 'TAMPERED_SIGNATURE')}
-                className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition"
-              >
-                🛡️ Send Forged Signature (Expect HTTP 400)
-              </button>
-            </div>
-
-            {booking.webhookLogs && booking.webhookLogs.length > 0 && (
-              <div className="space-y-2 pt-2 border-t border-slate-100">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                  Recent Webhook Callback Log:
-                </p>
-                <div className="max-h-48 overflow-y-auto pr-1.5 space-y-2">
-                  {booking.webhookLogs.map((wh) => (
-                    <div
-                      key={wh.id}
-                      className={`rounded-xl border p-2.5 text-[11px] ${wh.httpStatus === 400 || wh.event === 'payment.failed'
-                          ? 'border-rose-200 bg-rose-50/70 text-rose-900'
-                          : 'border-emerald-200 bg-emerald-50/70 text-emerald-900'
-                        }`}
-                    >
-                      <div className="flex items-center justify-between font-mono font-bold">
-                        <span>{wh.event}</span>
-                        <span>HTTP {wh.httpStatus}</span>
-                      </div>
-                      <p className="mt-1 text-[10px] leading-relaxed">{wh.reason}</p>
-                      <p className="mt-1 font-mono text-[9px] opacity-75 truncate">
-                        Sig: {wh.signature}
-                      </p>
-                    </div>
-                  ))}
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                  <ShieldCheck className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-extrabold text-slate-900">
+                    Verified Payment Receipt
+                  </h3>
+                  <p className="text-[11px] text-slate-500">Razorpay 256-Bit SSL Protected</p>
                 </div>
               </div>
-            )}
+              <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
+                ✓ Authentic
+              </span>
+            </div>
+
+            <div className="rounded-xl bg-slate-50 border border-slate-200/70 p-3.5 space-y-2.5 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Payment Status</span>
+                <span className="font-extrabold text-emerald-700 flex items-center gap-1">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  {booking.paymentStatus === 'Paid'
+                    ? 'Paid & Confirmed'
+                    : booking.paymentStatus === 'Partially Paid'
+                      ? '25% Advance Paid'
+                      : booking.paymentStatus}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Payment Gateway</span>
+                <span className="font-semibold text-slate-800">Razorpay Online</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Transaction ID</span>
+                <span className="font-mono text-[11px] font-semibold text-slate-800">
+                  {booking.razorpayPaymentId || `pay_Rzp_${booking.id}`}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Order Reference</span>
+                <span className="font-mono text-[11px] text-slate-600">
+                  {booking.razorpayOrderId || `order_Rzp_${booking.id}`}
+                </span>
+              </div>
+              <div className="flex items-center justify-between border-t border-slate-200/80 pt-2">
+                <span className="text-slate-500">Tax Invoice No.</span>
+                <span className="font-bold text-brand-700">INV-2026-0{booking.id}</span>
+              </div>
+            </div>
+
+            <Link
+              to={`/invoices/${booking.id}`}
+              className="btn-secondary w-full py-2.5 text-xs font-bold flex items-center justify-center gap-2"
+            >
+              <Printer className="h-4 w-4 text-brand-600" /> View & Print Official GST Receipt
+            </Link>
           </div>
         </div>
       </div>

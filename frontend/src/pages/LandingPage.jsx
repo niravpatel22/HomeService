@@ -24,36 +24,34 @@ import { formatCurrency } from '../utils/formatters';
 const HERO_SLIDES = [
   {
     id: 1,
-    serviceId: 5,
+    serviceId: 2,
     category: 'AC Repair & Maintenance',
     badge: 'MOST BOOKED THIS WEEK',
     title: 'Split & Window AC High-Pressure Foam-Jet Service',
     subtitle:
       'Deep chemical coil wash, gas pressure diagnostics, drain tray sanitization, and 98.6% cooling efficiency restoration by certified HVAC engineers.',
-    price: 599,
-    duration: '60 Mins',
+    price: 799,
+    duration: '90 Mins',
     rating: '4.9 ★ (1,420+ Verified Jobs)',
     warranty: '30-Day Cooling Warranty',
     technicianTag: 'Manoj Kumar • Senior HVAC Specialist',
-    imageUrl:
-      'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1400&q=85',
-    accentColor: 'from-brand-500 to-indigo-600',
+    imageUrl: '/assets/services/ac-foam-service.jpg',
+    accentColor: 'from-brand-500 to-emerald-600',
   },
   {
     id: 2,
-    serviceId: 7,
+    serviceId: 4,
     category: 'Home Deep Cleaning',
     badge: 'HOSPITAL-GRADE SANITIZATION',
     title: '2BHK / 3BHK Intensive Full-Home Steam Sanitization',
     subtitle:
       'Single-disc floor scrubbing, kitchen chimney & tile degreasing, bathroom descaling, and eco-safe sofa dry vacuuming by a 4-member verified crew.',
     price: 2499,
-    duration: '240 Mins',
+    duration: '180 Mins',
     rating: '4.9 ★ (980+ Homes Cleaned)',
     warranty: '100% Stain-Free Guarantee',
     technicianTag: 'SparklePro Hygiene Crew • Background Verified',
-    imageUrl:
-      'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1400&q=85',
+    imageUrl: '/assets/services/home-deep-cleaning.jpg',
     accentColor: 'from-emerald-500 to-teal-600',
   },
   {
@@ -64,13 +62,12 @@ const HERO_SLIDES = [
     title: 'Complete Switchboard, MCB & Smart Wiring Diagnostics',
     subtitle:
       'Thermal load inspection, 3-phase DB box balancing, inverter battery backup wiring, and surge-protected modular switchboard upgrades.',
-    price: 299,
-    duration: '45 Mins',
-    rating: '4.8 ★ (2,150+ Safe Installations)',
+    price: 599,
+    duration: '60 Mins',
+    rating: '4.9 ★ (2,150+ Safe Installations)',
     warranty: 'Govt. Licensed Electricians',
     technicianTag: 'Rajesh Kulkarni • Certified Master Electrician',
-    imageUrl:
-      'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1400&q=85',
+    imageUrl: '/assets/services/electrical-inspection.jpg',
     accentColor: 'from-amber-500 to-orange-600',
   },
   {
@@ -81,76 +78,71 @@ const HERO_SLIDES = [
     title: 'Bathroom Leakage, Mixer Tap & Hydro-Jet Pipeline Overhaul',
     subtitle:
       'Non-invasive acoustic leak detection, concealed diverter cartridge replacement, overhead tank sanitization, and high-pressure drain unclogging.',
-    price: 349,
-    duration: '50 Mins',
+    price: 499,
+    duration: '60 Mins',
     rating: '4.8 ★ (1,190+ Leak-Free Repairs)',
     warranty: 'Genuine OEM Brass Fittings',
     technicianTag: 'Suresh Nair • Master Plumbing Specialist',
-    imageUrl:
-      'https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=1400&q=85',
-    accentColor: 'from-sky-500 to-blue-600',
+    imageUrl: '/assets/services/luxury-plumbing.jpg',
+    accentColor: 'from-sky-500 to-cyan-600',
   },
   {
     id: 5,
-    serviceId: 9,
+    serviceId: 5,
     category: 'Painting & Waterproofing',
     badge: 'DUST-FREE MECHANIZED FINISH',
     title: 'Laser-Measured Interior Painting & Terrace Waterproofing',
     subtitle:
       'Crack-bridging elastomeric damp proofing, automated vacuum sanding, low-VOC luxury emulsion coats, and on-time room handover.',
-    price: 3999,
+    price: 3499,
     duration: 'Same-Day Inspection',
     rating: '4.9 ★ (640+ Renovated Homes)',
     warranty: '1-Year Damp-Proof Warranty',
     technicianTag: 'Apex Interior Finishing Division',
-    imageUrl:
-      'https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=1400&q=85',
-    accentColor: 'from-purple-500 to-indigo-600',
+    imageUrl: '/assets/services/interior-painting.jpg',
+    accentColor: 'from-teal-500 to-emerald-600',
   },
 ];
 
 const TRANSFORMATION_SLIDES = [
   {
     id: 'spot-1',
-    tag: 'MONSOON & SUMMER Bestseller',
+    tag: 'MONSOON & SUMMER BESTSELLER',
     title: 'Split AC Foam-Jet + Anti-Rust Coil Coating',
     beforeAfterText: 'Restores air throw by 40% & cuts monthly electricity bills by up to 22%.',
     couponCode: 'WELCOME20',
     discountLabel: 'Flat 20% OFF (Up to ₹500)',
-    price: 599,
-    originalPrice: 899,
-    serviceId: 5,
-    imageUrl:
-      'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=1200&q=85',
+    price: 799,
+    originalPrice: 1099,
+    serviceId: 2,
+    imageUrl: '/assets/services/ac-foam-service.jpg',
     metrics: ['100% Mess-Free Jacket Wash', 'Digital Manifold Pressure Check', '30-Day Service Warranty'],
   },
   {
     id: 'spot-2',
-    tag: 'FESTIVE HOME MAKEOVER',
-    title: 'Full Kitchen Chimneys, Hob & Tile Steam Degreasing',
-    beforeAfterText: 'Removes 99.4% carbonized oil deposits & food-grade steam sanitizes all cabinets.',
+    tag: 'CUSTOM WOODWORK & HARDWARE',
+    title: 'Smart Biometric Lock & Modular Wardrobe Restoration',
+    beforeAfterText: 'Precision mortise routing, soft-close hydraulic hinge upgrades, and zero-dust handover.',
     couponCode: 'WELCOME20',
-    discountLabel: 'Save ₹400 Instantly',
-    price: 1199,
-    originalPrice: 1599,
-    serviceId: 8,
-    imageUrl:
-      'https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1200&q=85',
-    metrics: ['Eco-Safe Non-Caustic Degreaser', 'Chimney Suction Test Included', '2-Hour Express Turnaround'],
+    discountLabel: 'Save ₹300 Instantly',
+    price: 699,
+    originalPrice: 999,
+    serviceId: 6,
+    imageUrl: '/assets/services/carpentry-woodwork.jpg',
+    metrics: ['Precision Jig Template Routing', 'Concealed Hydraulic Hinges', '30-Day Hardware Warranty'],
   },
   {
     id: 'spot-3',
-    tag: 'SMART HOME SAFETY PACKAGE',
-    title: 'Whole-House Electrical Safety Audit & MCB Upgrade',
-    beforeAfterText: 'Prevents short-circuits, appliance burnouts, and earthing voltage leakage.',
+    tag: 'WHO-CERTIFIED ECO HYGIENE',
+    title: 'Odorless Botanical Pest Control & Appliance Care',
+    beforeAfterText: '100% child-safe herbal gel baiting & digital PCB diagnostics for modern kitchens.',
     couponCode: 'WELCOME20',
-    discountLabel: '20% OFF First Audit',
-    price: 399,
-    originalPrice: 599,
-    serviceId: 2,
-    imageUrl:
-      'https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1200&q=85',
-    metrics: ['Digital Multimeter Load Report', 'ISI-Marked Breaker Check', 'Instant GST Tax Invoice'],
+    discountLabel: '20% OFF First Booking',
+    price: 999,
+    originalPrice: 1399,
+    serviceId: 8,
+    imageUrl: '/assets/services/botanical-pest-control.jpg',
+    metrics: ['No Need to Empty Kitchen', 'Child & Pet Safe Botanical Gel', '60-Day Free Re-Treatment'],
   },
 ];
 
@@ -301,8 +293,8 @@ export default function LandingPage() {
                       type="button"
                       onClick={() => setActiveSlide(idx)}
                       className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all whitespace-nowrap ${idx === activeSlide
-                          ? 'bg-brand-600 text-white shadow-md scale-[1.02]'
-                          : 'bg-slate-900/80 text-slate-400 border border-slate-800 hover:bg-slate-800 hover:text-white'
+                        ? 'bg-brand-600 text-white shadow-md scale-[1.02]'
+                        : 'bg-slate-900/80 text-slate-400 border border-slate-800 hover:bg-slate-800 hover:text-white'
                         }`}
                     >
                       {s.category}
@@ -335,8 +327,8 @@ export default function LandingPage() {
                       src={slide.imageUrl}
                       alt={slide.title}
                       className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-out ${idx === activeSlide
-                          ? 'opacity-100 scale-100 animate-ken-burns'
-                          : 'opacity-0 scale-105 pointer-events-none'
+                        ? 'opacity-100 scale-100 animate-ken-burns'
+                        : 'opacity-0 scale-105 pointer-events-none'
                         }`}
                     />
                   ))}
@@ -482,8 +474,8 @@ export default function LandingPage() {
                   type="button"
                   onClick={() => setActiveSpotlight(idx)}
                   className={`h-2.5 rounded-full transition-all ${idx === activeSpotlight
-                      ? 'w-8 bg-brand-400'
-                      : 'w-2.5 bg-slate-700 hover:bg-slate-500'
+                    ? 'w-8 bg-brand-400'
+                    : 'w-2.5 bg-slate-700 hover:bg-slate-500'
                     }`}
                   aria-label={`Spotlight slide ${idx + 1}`}
                 />
