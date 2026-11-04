@@ -242,7 +242,7 @@ export default function AdminDashboard() {
   });
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-start bg-slate-100/70 overflow-x-hidden">
+    <div className="h-full flex overflow-hidden bg-slate-100/70">
       {/* Mobile Sidebar Backdrop */}
       {sidebarOpen && (
         <div
@@ -252,10 +252,10 @@ export default function AdminDashboard() {
       )}
 
       {/* ====================================================================
-          ENTERPRISE SAAS DARK LEFT SIDEBAR (STICKY & THEME SCROLLBAR)
+          ENTERPRISE SAAS DARK LEFT SIDEBAR (FIXED & THEME SCROLLBAR)
       ==================================================================== */}
       <aside
-        className={`fixed top-16 bottom-0 left-0 z-40 w-64 xl:w-[272px] bg-slate-950 text-slate-300 flex flex-col border-r border-slate-800 transition-transform duration-200 lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:self-start lg:z-20 lg:translate-x-0 shrink-0 overflow-y-auto sidebar-theme-scroll ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-16 bottom-0 left-0 z-40 w-64 xl:w-[272px] bg-slate-950 text-slate-300 flex flex-col border-r border-slate-800 transition-transform duration-200 lg:static lg:h-full lg:z-20 lg:translate-x-0 shrink-0 overflow-y-auto sidebar-theme-scroll ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
       >
         {/* Sidebar Top Header */}
@@ -410,9 +410,9 @@ export default function AdminDashboard() {
       {/* ====================================================================
           MAIN SAAS COMMAND WORKSPACE
       ==================================================================== */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 h-full overflow-y-auto workspace-theme-scroll flex flex-col min-w-0">
         {/* Top Command Bar */}
-        <div className="bg-white border-b border-slate-200 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3">
               <button

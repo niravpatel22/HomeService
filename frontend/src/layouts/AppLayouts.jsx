@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   ShieldCheck,
   Bell,
@@ -182,8 +182,8 @@ export function MainHeader() {
                       <div
                         key={item.id}
                         className={`rounded-xl border p-3 text-xs transition ${item.isRead
-                            ? 'border-slate-100 bg-slate-50/60 text-slate-600'
-                            : 'border-brand-100 bg-brand-50/50 text-slate-900'
+                          ? 'border-slate-100 bg-slate-50/60 text-slate-600'
+                          : 'border-brand-100 bg-brand-50/50 text-slate-900'
                           }`}
                       >
                         <p className="font-bold text-slate-900">{item.title}</p>
@@ -231,8 +231,8 @@ export function MainHeader() {
                         type="button"
                         onClick={() => handleInstantRoleSwitch(cred.role, cred.dashboardPath)}
                         className={`w-full rounded-xl p-2.5 text-left text-xs transition flex items-center justify-between gap-2 ${isActiveRole
-                            ? 'bg-brand-600 text-white shadow-xs'
-                            : 'hover:bg-slate-50 text-slate-800 border border-transparent hover:border-slate-200'
+                          ? 'bg-brand-600 text-white shadow-xs'
+                          : 'hover:bg-slate-50 text-slate-800 border border-transparent hover:border-slate-200'
                           }`}
                       >
                         <div className="min-w-0">
@@ -246,8 +246,8 @@ export function MainHeader() {
                         </div>
                         <span
                           className={`rounded-md px-2 py-0.5 text-[10px] font-bold shrink-0 ${isActiveRole
-                              ? 'bg-white/20 text-white'
-                              : 'bg-slate-100 text-slate-700'
+                            ? 'bg-white/20 text-white'
+                            : 'bg-slate-100 text-slate-700'
                             }`}
                         >
                           {isActiveRole ? 'Active' : 'Switch →'}
@@ -379,8 +379,8 @@ export function MainHeader() {
                     type="button"
                     onClick={() => handleInstantRoleSwitch(cred.role, cred.dashboardPath)}
                     className={`rounded-xl p-2.5 text-left text-xs font-bold transition border ${isActiveRole
-                        ? 'border-brand-600 bg-brand-600 text-white'
-                        : 'border-slate-200 bg-slate-50 text-slate-800 hover:bg-slate-100'
+                      ? 'border-brand-600 bg-brand-600 text-white'
+                      : 'border-slate-200 bg-slate-50 text-slate-800 hover:bg-slate-100'
                       }`}
                   >
                     <span className="block truncate">{cred.roleTitle}</span>
@@ -511,11 +511,22 @@ export function Footer() {
 
 export function AppShell({ children }) {
   const { toast } = usePlatform();
+  const location = useLocation();
+  const isDashboardRoute = location.pathname.endsWith('/dashboard');
+
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50">
+    <div
+      className={
+        isDashboardRoute
+          ? 'flex h-screen flex-col overflow-hidden bg-slate-50'
+          : 'flex min-h-screen flex-col bg-slate-50'
+      }
+    >
       <MainHeader />
-      <main className="flex-1">{children}</main>
-      <Footer />
+      <main className={isDashboardRoute ? 'flex-1 min-h-0 overflow-hidden' : 'flex-1'}>
+        {children}
+      </main>
+      {!isDashboardRoute && <Footer />}
       <ToastBanner toast={toast} />
     </div>
   );

@@ -6,15 +6,16 @@
   html,
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    overflow-x: hidden;
   }
 }
 
 /* ============================================================================
-   THEME-BASED CUSTOM SCROLLBARS (DARK SIDEBAR, TABLES & GLOBAL VIEWPORT)
+   THEME-BASED CUSTOM SCROLLBARS (CHROME / EDGE / SAFARI + FIREFOX FALLBACK)
+   Note: Do not set unscoped scrollbar-width/scrollbar-color on WebKit/Blink,
+   as Chromium 121+ disables ::-webkit-scrollbar when those properties exist.
 ============================================================================ */
 
-/* Global Viewport Scrollbar */
+/* Global Page Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -25,37 +26,65 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #4f46e5 0%, #3730a3 100%);
+  background: linear-gradient(180deg, #6366f1 0%, #4338ca 100%);
   border-radius: 9999px;
   border: 2px solid #0f172a;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #6366f1;
+  background: #818cf8;
 }
 
 /* Dark Enterprise Sidebar Theme Scrollbar */
-.sidebar-theme-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: #4338ca #020617;
-}
-
 .sidebar-theme-scroll::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 .sidebar-theme-scroll::-webkit-scrollbar-track {
   background: #020617;
-}
-
-.sidebar-theme-scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #6366f1 0%, #312e81 100%);
   border-radius: 9999px;
 }
 
+.sidebar-theme-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #6366f1 0%, #3730a3 100%);
+  border-radius: 9999px;
+  border: 1px solid #0f172a;
+}
+
 .sidebar-theme-scroll::-webkit-scrollbar-thumb:hover {
-  background: #818cf8;
+  background: linear-gradient(180deg, #818cf8 0%, #4f46e5 100%);
+}
+
+/* Main Dashboard Workspace Theme Scrollbar */
+.workspace-theme-scroll::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+.workspace-theme-scroll::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.workspace-theme-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #6366f1 0%, #4338ca 100%);
+  border-radius: 9999px;
+  border: 1.5px solid #f1f5f9;
+}
+
+.workspace-theme-scroll::-webkit-scrollbar-thumb:hover {
+  background: #4f46e5;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  .sidebar-theme-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #4f46e5 #020617;
+  }
+  .workspace-theme-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #4f46e5 #f1f5f9;
+  }
 }
 
 @layer components {
