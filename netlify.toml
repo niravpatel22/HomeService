@@ -7,8 +7,19 @@
   command = "npm run build"
   publish = "dist"
 
+[functions]
+  directory = "../netlify/functions"
+  node_bundler = "esbuild"
+
 [build.environment]
   NODE_VERSION = "22"
+  VITE_API_BASE_URL = "/api/v1"
+
+# Cloud Serverless Backend API Rewrite (/api/v1/* -> /.netlify/functions/api)
+[[redirects]]
+  from = "/api/v1/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
 
 # SPA Fallback Routing for React Router v6
 [[redirects]]
@@ -24,4 +35,3 @@
     X-Content-Type-Options = "nosniff"
     X-XSS-Protection = "1; mode=block"
     Referrer-Policy = "strict-origin-when-cross-origin"
-

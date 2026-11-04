@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: homeserve-saas-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "False"
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: JWT_REFRESH_SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: '["https://homeserve-technologies-saas.netlify.app","http://localhost:5173"]'
+      - key: RAZORPAY_KEY_ID
+        value: rzp_test_HomeServeKey123
+      - key: RAZORPAY_KEY_SECRET
+        value: rzp_test_SecretKey987654321
+      - key: RAZORPAY_WEBHOOK_SECRET
+        value: whsec_HomeServeWebhookSecret2026
+

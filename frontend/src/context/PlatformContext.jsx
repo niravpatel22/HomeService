@@ -118,7 +118,7 @@ export function PlatformProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   const [toast, setToast] = useState(null);
 
-  // Persist every database mutation into localStorage so state survives reloads on Netlify
+  // Persist every database mutation into localStorage and sync with Cloud Backend API
   useEffect(() => {
     try {
       localStorage.setItem(PERSISTENT_DB_KEY, JSON.stringify(data));
@@ -134,8 +134,17 @@ export function PlatformProvider({ children }) {
     }, 4500);
   }, []);
 
-  const syncWithBackend = useCallback(async () => {
+  const syncWithBackend = useCallback(async (preferLocal = false) => {
     try {
+      if (preferLocal) {
+        const saved = localStorage.getItem(PERSISTENT_DB_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && Array.isArray(parsed.services) && Array.isArray(parsed.bookings)) {
+            await apiClient.post('/sync', { data: parsed }).catch(() => {});
+          }
+        }
+      }
       const res = await apiClient.get('/bootstrap');
       if (res.data && Array.isArray(res.data.services)) {
         setData(res.data);
@@ -152,7 +161,8 @@ export function PlatformProvider({ children }) {
 
   useEffect(() => {
     const initSession = async () => {
-      await syncWithBackend();
+      const hasLocalCustomizations = Boolean(localStorage.getItem(PERSISTENT_DB_KEY));
+      await syncWithBackend(hasLocalCustomizations);
       const existingToken = sessionStorage.getItem('hs_access_token');
       if (existingToken) {
         try {
@@ -453,8 +463,8 @@ export function PlatformProvider({ children }) {
       return { success: false, error: errMsg };
     }
 
-    // Try backend first if connected and scenario is SUCCESS
-    if (isBackendConnected && paymentScenario === 'SUCCESS') {
+    // Execute against live Cloud Backend API when connected
+    if (isBackendConnected) {
       try {
         const res = await apiClient.post('/bookings', {
           service_id: Number(serviceId),
@@ -467,12 +477,21 @@ export function PlatformProvider({ children }) {
           coupon_code: couponCode || null,
           payment_type: paymentType,
           problem_image_urls: problemImageUrls || [],
+          payment_scenario: paymentScenario,
+          payment_method: paymentMethod,
         });
         await syncWithBackend();
-        showToast(
-          `Booking ${res.data.bookingNumber} persisted & Razorpay payment.captured webhook verified!`,
-          'success'
-        );
+        if (paymentScenario === 'FAILED') {
+          showToast(
+            `Webhook 'payment.failed' processed for ${res.data.bookingNumber}. Booking saved with Failed payment status — you can retry payment now!`,
+            'error'
+          );
+        } else {
+          showToast(
+            `Booking ${res.data.bookingNumber} persisted & Razorpay payment.captured webhook verified!`,
+            'success'
+          );
+        }
         return { success: true, booking: res.data };
       } catch (err) {
         const msg =
@@ -669,6 +688,15 @@ export function PlatformProvider({ children }) {
   const simulateRazorpayWebhook = async (bookingId, scenario = 'SUCCESS') => {
     const target = data.bookings.find((b) => Number(b.id) === Number(bookingId));
     if (!target) return { success: false, error: 'Booking not found.' };
+
+    if (isBackendConnected) {
+      apiClient
+        .post('/payments/webhook', {
+          booking_id: Number(bookingId),
+          scenario,
+        })
+        .catch(() => {});
+    }
 
     const orderId = target.razorpayOrderId || `order_RzpTest_${target.id}`;
     const paymentId = `pay_RzpWebhook_${target.id}_${Date.now().toString().slice(-4)}`;
@@ -1382,7 +1410,10 @@ export function PlatformProvider({ children }) {
 
   const resetDemoDatabase = () => {
     localStorage.removeItem(PERSISTENT_DB_KEY);
-    setData(INITIAL_MOCK_DATA);
+    if (isBackendConnected) {
+      apiClient.post('/reset').catch(() => {});
+    }
+    setData({ ...INITIAL_MOCK_DATA, isMockMode: false });
     showToast('Database reset to initial canonical seed state.', 'info');
   };
 
