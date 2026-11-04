@@ -3,9 +3,59 @@
 @tailwind utilities;
 
 @layer base {
+  html,
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
   }
+}
+
+/* ============================================================================
+   THEME-BASED CUSTOM SCROLLBARS (DARK SIDEBAR, TABLES & GLOBAL VIEWPORT)
+============================================================================ */
+
+/* Global Viewport Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4f46e5 0%, #3730a3 100%);
+  border-radius: 9999px;
+  border: 2px solid #0f172a;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6366f1;
+}
+
+/* Dark Enterprise Sidebar Theme Scrollbar */
+.sidebar-theme-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #4338ca #020617;
+}
+
+.sidebar-theme-scroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.sidebar-theme-scroll::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+.sidebar-theme-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #6366f1 0%, #312e81 100%);
+  border-radius: 9999px;
+}
+
+.sidebar-theme-scroll::-webkit-scrollbar-thumb:hover {
+  background: #818cf8;
 }
 
 @layer components {
@@ -47,7 +97,8 @@
 }
 
 @keyframes floatSlow {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {

@@ -53,36 +53,36 @@ export function MainHeader() {
       {/* Subtle Top Enterprise Gradient Accent Line */}
       <div className="h-0.5 w-full bg-gradient-to-r from-brand-600 via-indigo-500 to-emerald-500" />
 
-      <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-16 w-full max-w-[1600px] items-center justify-between gap-2 px-3 sm:px-5 lg:px-6">
         {/* Left: Brand Identity + Segmented Pill Navigation */}
-        <div className="flex items-center gap-5 xl:gap-7 min-w-0">
-          <Link to="/" className="flex items-center gap-3 shrink-0 group">
-            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-indigo-700 text-white shadow-sm ring-2 ring-brand-100 transition duration-200 group-hover:scale-105">
+        <div className="flex items-center gap-3 xl:gap-6 min-w-0">
+          <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
+            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-indigo-700 text-white shadow-sm ring-2 ring-brand-100 transition duration-200 group-hover:scale-105">
               <ShieldCheck className="h-5 w-5" />
               <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500" />
             </div>
             <div className="leading-none">
               <div className="flex items-center gap-1.5">
-                <span className="text-lg font-extrabold tracking-tight text-slate-900 whitespace-nowrap">
+                <span className="text-base xl:text-lg font-extrabold tracking-tight text-slate-900 whitespace-nowrap">
                   HomeServe<span className="text-brand-600">Pro</span>
                 </span>
-                <span className="hidden sm:inline-flex items-center rounded-md bg-brand-50 px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wider text-brand-700 border border-brand-200/60">
+                <span className="hidden xl:inline-flex items-center rounded-md bg-brand-50 px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wider text-brand-700 border border-brand-200/60">
                   SaaS
                 </span>
               </div>
-              <span className="block text-[9px] font-bold uppercase tracking-widest text-slate-400 whitespace-nowrap mt-0.5">
+              <span className="hidden sm:block text-[8px] xl:text-[9px] font-bold uppercase tracking-widest text-slate-400 whitespace-nowrap mt-0.5">
                 HomeServe Technologies
               </span>
             </div>
           </Link>
 
           {/* Desktop Segmented Navigation Pill */}
-          <nav className="hidden lg:flex items-center gap-1 rounded-2xl border border-slate-200/80 bg-slate-100/80 p-1">
+          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 rounded-2xl border border-slate-200/80 bg-slate-100/80 p-1">
             <NavLink
               to="/"
               end
               className={({ isActive }) =>
-                `whitespace-nowrap inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${isActive
+                `whitespace-nowrap inline-flex items-center gap-1.5 rounded-xl px-2.5 xl:px-3 py-1.5 text-xs font-bold transition ${isActive
                   ? 'bg-white text-brand-700 shadow-xs'
                   : 'text-slate-600 hover:bg-white/60 hover:text-slate-900'
                 }`
@@ -95,7 +95,7 @@ export function MainHeader() {
             <NavLink
               to="/services"
               className={({ isActive }) =>
-                `whitespace-nowrap inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${isActive
+                `whitespace-nowrap inline-flex items-center gap-1.5 rounded-xl px-2.5 xl:px-3 py-1.5 text-xs font-bold transition ${isActive
                   ? 'bg-white text-brand-700 shadow-xs'
                   : 'text-slate-600 hover:bg-white/60 hover:text-slate-900'
                 }`
@@ -108,7 +108,7 @@ export function MainHeader() {
             <NavLink
               to="/register/provider"
               className={({ isActive }) =>
-                `whitespace-nowrap inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${isActive
+                `whitespace-nowrap inline-flex items-center gap-1.5 rounded-xl px-2.5 xl:px-3 py-1.5 text-xs font-bold transition ${isActive
                   ? 'bg-white text-brand-700 shadow-xs'
                   : 'text-slate-600 hover:bg-white/60 hover:text-slate-900'
                 }`
@@ -122,21 +122,22 @@ export function MainHeader() {
               <NavLink
                 to={ROLE_HOME_ROUTES[currentUser.role]}
                 className={({ isActive }) =>
-                  `whitespace-nowrap inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-extrabold transition ${isActive
+                  `whitespace-nowrap inline-flex items-center gap-1.5 rounded-xl px-2.5 xl:px-3.5 py-1.5 text-xs font-extrabold transition ${isActive
                     ? 'bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-xs'
                     : 'bg-white/90 text-slate-900 hover:bg-white shadow-2xs'
                   }`
                 }
               >
                 <LayoutDashboard className="h-3.5 w-3.5 text-brand-400 shrink-0" />
-                <span>{ROLE_LABELS[currentUser.role]} Console</span>
+                <span>{ROLE_LABELS[currentUser.role]}</span>
+                <span className="hidden xl:inline">Console</span>
               </NavLink>
             )}
           </nav>
         </div>
 
         {/* Right: Notification Center, Interactive Role Switcher & User Controls */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 xl:gap-2 shrink-0">
           {/* Notification Bell */}
           <div className="relative">
             <button

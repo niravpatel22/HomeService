@@ -242,7 +242,7 @@ export default function AdminDashboard() {
   });
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-start bg-slate-100/70">
+    <div className="min-h-[calc(100vh-4rem)] flex items-start bg-slate-100/70 overflow-x-hidden">
       {/* Mobile Sidebar Backdrop */}
       {sidebarOpen && (
         <div
@@ -252,10 +252,10 @@ export default function AdminDashboard() {
       )}
 
       {/* ====================================================================
-          ENTERPRISE SAAS DARK LEFT SIDEBAR (STICKY & ZERO BLANK GAP)
+          ENTERPRISE SAAS DARK LEFT SIDEBAR (STICKY & THEME SCROLLBAR)
       ==================================================================== */}
       <aside
-        className={`fixed top-16 bottom-0 left-0 z-40 w-72 bg-slate-950 text-slate-300 flex flex-col border-r border-slate-800 transition-transform duration-200 lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:self-start lg:z-20 lg:translate-x-0 shrink-0 overflow-y-auto ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-16 bottom-0 left-0 z-40 w-64 xl:w-[272px] bg-slate-950 text-slate-300 flex flex-col border-r border-slate-800 transition-transform duration-200 lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:self-start lg:z-20 lg:translate-x-0 shrink-0 overflow-y-auto sidebar-theme-scroll ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
       >
         {/* Sidebar Top Header */}

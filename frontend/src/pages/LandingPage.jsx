@@ -207,16 +207,14 @@ export default function LandingPage() {
           {HERO_SLIDES.map((slide, idx) => (
             <div
               key={slide.id}
-              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                idx === activeSlide ? 'opacity-30' : 'opacity-0'
-              }`}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === activeSlide ? 'opacity-30' : 'opacity-0'
+                }`}
             >
               <img
                 src={slide.imageUrl}
                 alt={slide.title}
-                className={`h-full w-full object-cover ${
-                  idx === activeSlide ? 'animate-ken-burns' : ''
-                }`}
+                className={`h-full w-full object-cover ${idx === activeSlide ? 'animate-ken-burns' : ''
+                  }`}
               />
             </div>
           ))}
@@ -302,11 +300,10 @@ export default function LandingPage() {
                       key={s.id}
                       type="button"
                       onClick={() => setActiveSlide(idx)}
-                      className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all whitespace-nowrap ${
-                        idx === activeSlide
+                      className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all whitespace-nowrap ${idx === activeSlide
                           ? 'bg-brand-600 text-white shadow-md scale-[1.02]'
                           : 'bg-slate-900/80 text-slate-400 border border-slate-800 hover:bg-slate-800 hover:text-white'
-                      }`}
+                        }`}
                     >
                       {s.category}
                     </button>
@@ -337,11 +334,10 @@ export default function LandingPage() {
                       key={slide.id}
                       src={slide.imageUrl}
                       alt={slide.title}
-                      className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-out ${
-                        idx === activeSlide
+                      className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-out ${idx === activeSlide
                           ? 'opacity-100 scale-100 animate-ken-burns'
                           : 'opacity-0 scale-105 pointer-events-none'
-                      }`}
+                        }`}
                     />
                   ))}
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/35 to-transparent" />
@@ -400,9 +396,8 @@ export default function LandingPage() {
                   <div className="h-1 w-full overflow-hidden rounded-full bg-slate-800">
                     <div
                       key={`${activeSlide}-${isPaused}`}
-                      className={`h-full rounded-full bg-gradient-to-r from-brand-400 to-emerald-400 ${
-                        isPaused ? 'w-1/2' : 'animate-slide-progress'
-                      }`}
+                      className={`h-full rounded-full bg-gradient-to-r from-brand-400 to-emerald-400 ${isPaused ? 'w-1/2' : 'animate-slide-progress'
+                        }`}
                     />
                   </div>
 
@@ -486,11 +481,10 @@ export default function LandingPage() {
                   key={item.id}
                   type="button"
                   onClick={() => setActiveSpotlight(idx)}
-                  className={`h-2.5 rounded-full transition-all ${
-                    idx === activeSpotlight
+                  className={`h-2.5 rounded-full transition-all ${idx === activeSpotlight
                       ? 'w-8 bg-brand-400'
                       : 'w-2.5 bg-slate-700 hover:bg-slate-500'
-                  }`}
+                    }`}
                   aria-label={`Spotlight slide ${idx + 1}`}
                 />
               ))}
