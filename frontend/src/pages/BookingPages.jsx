@@ -129,7 +129,54 @@ export function BookingCheckoutPage() {
       setError('Selected time slot is already occupied for this provider. Please select another slot.');
       return;
     }
-    setRazorpayModalOpen(true);
+    openRealRazorpayCheckout();
+  };
+
+  // Official Razorpay Standard Checkout (checkout.js). Activates automatically when a real
+  // Razorpay Key ID (rzp_test_* / rzp_live_*) is configured via VITE_RAZORPAY_KEY_ID.
+  // Falls back to the in-app secure checkout dialog when no real key is configured or offline.
+  const openRealRazorpayCheckout = async () => {
+    const keyId = (import.meta.env.VITE_RAZORPAY_KEY_ID || '').trim();
+    const hasRealKey = /^rzp_(test|live)_[A-Za-z0-9]{10,}$/.test(keyId);
+    if (!hasRealKey || !navigator.onLine) {
+      setRazorpayModalOpen(true);
+      return;
+    }
+    const scriptLoaded =
+      window.Razorpay ||
+      (await new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+      }));
+    if (!scriptLoaded || !window.Razorpay) {
+      setRazorpayModalOpen(true);
+      return;
+    }
+    const rzp = new window.Razorpay({
+      key: keyId,
+      amount: Math.round(payableNow * 100),
+      currency: 'INR',
+      name: 'HomeServe Technologies',
+      description: `${service.name} • ${scheduledDate} ${selectedSlot.label}`,
+      image: '/favicon.svg',
+      prefill: {
+        name: currentCustomer?.fullName || '',
+        email: currentCustomer?.email || '',
+        contact: currentCustomer?.phone || '',
+      },
+      notes: { serviceId: String(service.id), providerId: String(selectedProvider.id) },
+      theme: { color: '#0d9488' },
+      handler: (response) => {
+        setPaymentMethod(`Razorpay (${response.razorpay_payment_id})`);
+        handleExecuteRazorpayScenario('SUCCESS');
+      },
+      modal: { ondismiss: () => setError('Payment was cancelled. You can retry anytime.') },
+    });
+    rzp.on('payment.failed', () => handleExecuteRazorpayScenario('FAILED'));
+    rzp.open();
   };
 
   const handleExecuteRazorpayScenario = async (scenario = 'SUCCESS') => {
