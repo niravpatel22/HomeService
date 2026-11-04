@@ -1,0 +1,178 @@
+{
+  "info": {
+    "name": "HomeServe Technologies — Home Services Booking SaaS API v1",
+    "description": "Complete Postman API Test Collection covering all 10 Functional Modules, 4 User Roles, RBAC, Double-Booking Prevention, and Razorpay Test Mode.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000/api/v1" },
+    { "key": "accessToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication & Authorization",
+      "item": [
+        {
+          "name": "Login (Customer / Provider / Technician / Super Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@homeserve.com\",\n  \"password\": \"Customer@123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/register/customer",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Ananya Rao\",\n  \"email\": \"ananya@example.com\",\n  \"phone\": \"9845011223\",\n  \"password\": \"Customer@123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Current User Profile (/auth/me)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Service Discovery & Availability",
+      "item": [
+        {
+          "name": "List All 8 Service Categories",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/categories"
+          }
+        },
+        {
+          "name": "Search & Filter Services",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/services?category_id=1&page=1&page_size=10"
+          }
+        },
+        {
+          "name": "Check Provider Non-Conflicting Available Slots",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/providers/1/available-slots?scheduled_date=2026-11-15"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Booking Lifecycle & Double-Booking Lock",
+      "item": [
+        {
+          "name": "Create Appointment Booking (Customer)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/bookings",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"service_id\": 2,\n  \"provider_id\": 1,\n  \"address_id\": 1,\n  \"scheduled_date\": \"2026-11-20\",\n  \"start_time\": \"09:00\",\n  \"end_time\": \"10:30\",\n  \"problem_description\": \"Split AC foam-jet deep service and coolant pressure check.\",\n  \"coupon_code\": \"WELCOME20\",\n  \"payment_type\": \"FULL\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Accept Booking (Provider)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/bookings/103/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Confirmed\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Assign Technician to Booking (Provider/Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/bookings/103/assign-technician",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"technician_id\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Technician Mark Arrival & Complete Job",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/technicians/me/jobs/102",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"COMPLETE\",\n  \"completion_remarks\": \"Replaced 16A socket and verified earthing.\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Payments, Reviews, Complaints & Admin Analytics",
+      "item": [
+        {
+          "name": "Create Razorpay Test Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/payments/create-order",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"booking_id\": 102,\n  \"payment_type\": \"BALANCE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Super Admin Platform Analytics",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/analytics/admin"
+          }
+        },
+        {
+          "name": "Export Bookings CSV Report",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/analytics/export-csv"
+          }
+        }
+      ]
+    }
+  ]
+}
+
