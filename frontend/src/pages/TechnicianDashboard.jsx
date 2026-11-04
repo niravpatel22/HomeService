@@ -394,8 +394,7 @@ export default function TechnicianDashboard() {
                 technicianUpdateJob(completionModalBooking.id, {
                   action: 'COMPLETE',
                   completionRemarks,
-                  completionImageUrl:
-                    'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=600&q=80',
+                  completionImageUrl: '/assets/services/ac-foam-service.jpg',
                 });
                 setCompletionModalBooking(null);
               }}

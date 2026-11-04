@@ -141,7 +141,7 @@ export function PlatformProvider({ children }) {
         if (saved) {
           const parsed = JSON.parse(saved);
           if (parsed && Array.isArray(parsed.services) && Array.isArray(parsed.bookings)) {
-            await apiClient.post('/sync', { data: parsed }).catch(() => {});
+            await apiClient.post('/sync', { data: parsed }).catch(() => { });
           }
         }
       }
@@ -181,57 +181,60 @@ export function PlatformProvider({ children }) {
   const loginWithCredentials = async (email, password) => {
     const normalizedEmail = (email || '').trim().toLowerCase();
     const trimmedPassword = (password || '').trim();
-    try {
-      const res = await apiClient.post('/auth/login', {
-        email: normalizedEmail,
-        password: trimmedPassword,
-      });
-      sessionStorage.setItem('hs_access_token', res.data.access_token);
-      sessionStorage.setItem('hs_refresh_token', res.data.refresh_token);
-      sessionStorage.setItem('hs_active_user', JSON.stringify(res.data.user));
-      setCurrentUser(res.data.user);
-      await syncWithBackend();
-      showToast(
-        `Signed in as ${res.data.user.fullName} (${res.data.user.role.replace('_', ' ').toUpperCase()})`,
-        'success'
-      );
-      return {
-        success: true,
-        user: res.data.user,
-        redirectPath: ROLE_HOME_ROUTES[res.data.user.role] || '/',
-      };
-    } catch (err) {
-      if (err.response) {
+    if (isBackendConnected) {
+      try {
+        const res = await apiClient.post('/auth/login', {
+          email: normalizedEmail,
+          password: trimmedPassword,
+        });
+        sessionStorage.setItem('hs_access_token', res.data.access_token);
+        sessionStorage.setItem('hs_refresh_token', res.data.refresh_token);
+        sessionStorage.setItem('hs_active_user', JSON.stringify(res.data.user));
+        setCurrentUser(res.data.user);
+        await syncWithBackend();
+        showToast(
+          `Signed in as ${res.data.user.fullName} (${res.data.user.role.replace('_', ' ').toUpperCase()})`,
+          'success'
+        );
         return {
-          success: false,
-          error: err.response.data?.detail || 'Invalid email or password.',
+          success: true,
+          user: res.data.user,
+          redirectPath: ROLE_HOME_ROUTES[res.data.user.role] || '/',
         };
+      } catch (err) {
+        if (err.response) {
+          return {
+            success: false,
+            error: err.response.data?.detail || 'Invalid email or password.',
+          };
+        }
       }
-      const user = data.users.find((u) => u.email.toLowerCase() === normalizedEmail);
-      if (!user) {
-        return { success: false, error: 'No account found with this email address.' };
-      }
-      const expectedPassword = ACCOUNT_PASSWORDS[normalizedEmail] || user.password;
-      if (expectedPassword && trimmedPassword !== expectedPassword) {
-        return {
-          success: false,
-          error: `Invalid password for ${normalizedEmail}. Please check the visible role credentials panel.`,
-        };
-      }
-      if (!user.isActive) {
-        return {
-          success: false,
-          error: 'This account has been suspended by Super Admin.',
-        };
-      }
-      sessionStorage.setItem('hs_active_user', JSON.stringify(user));
-      setCurrentUser(user);
-      showToast(
-        `Signed in as ${user.fullName} (${user.role.replace('_', ' ').toUpperCase()})`,
-        'success'
-      );
-      return { success: true, user, redirectPath: ROLE_HOME_ROUTES[user.role] || '/' };
     }
+
+    const user = data.users.find((u) => u.email.toLowerCase() === normalizedEmail);
+    if (!user) {
+      return { success: false, error: 'No account found with this email address.' };
+    }
+    const expectedPassword = ACCOUNT_PASSWORDS[normalizedEmail] || user.password;
+    if (expectedPassword && trimmedPassword !== expectedPassword) {
+      return {
+        success: false,
+        error: `Invalid password for ${normalizedEmail}. Please check the visible role credentials panel.`,
+      };
+    }
+    if (!user.isActive) {
+      return {
+        success: false,
+        error: 'This account has been suspended by Super Admin.',
+      };
+    }
+    sessionStorage.setItem('hs_active_user', JSON.stringify(user));
+    setCurrentUser(user);
+    showToast(
+      `Signed in as ${user.fullName} (${user.role.replace('_', ' ').toUpperCase()})`,
+      'success'
+    );
+    return { success: true, user, redirectPath: ROLE_HOME_ROUTES[user.role] || '/' };
   };
 
   const quickSwitchRole = async (roleKey) => {
@@ -247,64 +250,68 @@ export function PlatformProvider({ children }) {
 
   const registerCustomer = async ({ fullName, email, phone, password }) => {
     const normalizedEmail = email.trim().toLowerCase();
-    try {
-      const res = await apiClient.post('/auth/register/customer', {
-        full_name: fullName,
-        email: normalizedEmail,
-        phone,
-        password,
-      });
-      sessionStorage.setItem('hs_access_token', res.data.access_token);
-      sessionStorage.setItem('hs_refresh_token', res.data.refresh_token);
-      sessionStorage.setItem('hs_active_user', JSON.stringify(res.data.user));
-      setCurrentUser(res.data.user);
-      await syncWithBackend();
-      showToast('Customer account registered & persisted to database!', 'success');
-      return { success: true, user: res.data.user, redirectPath: '/customer/dashboard' };
-    } catch (err) {
-      if (err.response) {
-        return {
-          success: false,
-          error: err.response.data?.detail || 'Registration failed.',
-        };
+    if (isBackendConnected) {
+      try {
+        const res = await apiClient.post('/auth/register/customer', {
+          full_name: fullName,
+          email: normalizedEmail,
+          phone,
+          password,
+        });
+        sessionStorage.setItem('hs_access_token', res.data.access_token);
+        sessionStorage.setItem('hs_refresh_token', res.data.refresh_token);
+        sessionStorage.setItem('hs_active_user', JSON.stringify(res.data.user));
+        setCurrentUser(res.data.user);
+        await syncWithBackend();
+        showToast('Customer account registered & persisted to database!', 'success');
+        return { success: true, user: res.data.user, redirectPath: '/customer/dashboard' };
+      } catch (err) {
+        if (err.response) {
+          return {
+            success: false,
+            error: err.response.data?.detail || 'Registration failed.',
+          };
+        }
       }
-      if (data.users.some((u) => u.email.toLowerCase() === normalizedEmail)) {
-        return { success: false, error: 'An account with this email already exists.' };
-      }
-      const newUserId = Math.max(...data.users.map((u) => u.id), 10) + 1;
-      const newCustomerId = Math.max(...data.customers.map((c) => c.id), 10) + 1;
-      const newUser = {
-        id: newUserId,
-        fullName: fullName.trim(),
-        email: normalizedEmail,
-        phone,
-        password,
-        role: 'customer',
-        isActive: true,
-        isVerified: true,
-        createdAt: new Date().toISOString(),
-      };
-      const newCustomer = {
-        id: newCustomerId,
-        userId: newUserId,
-        fullName: newUser.fullName,
-        email: newUser.email,
-        phone: newUser.phone,
-        accountStatus: 'Active',
-        preferredCity: 'Bengaluru',
-        totalBookings: 0,
-        createdAt: '2026-11-04',
-      };
-      setData((prev) => ({
-        ...prev,
-        users: [...prev.users, newUser],
-        customers: [...prev.customers, newCustomer],
-      }));
-      sessionStorage.setItem('hs_active_user', JSON.stringify(newUser));
-      setCurrentUser(newUser);
-      showToast('Customer account registered & saved to persistent storage!', 'success');
-      return { success: true, user: newUser, redirectPath: '/customer/dashboard' };
     }
+
+    if (data.users.some((u) => u.email.toLowerCase() === normalizedEmail)) {
+      return { success: false, error: 'An account with this email already exists.' };
+    }
+    const newUserId = Math.max(...data.users.map((u) => u.id), 10) + 1;
+    const newCustomerId = Math.max(...data.customers.map((c) => c.id), 10) + 1;
+    const newUser = {
+      id: newUserId,
+      fullName: fullName.trim(),
+      email: normalizedEmail,
+      phone,
+      password,
+      role: 'customer',
+      isActive: true,
+      isVerified: true,
+      createdAt: new Date().toISOString(),
+    };
+    const newCustomer = {
+      id: newCustomerId,
+      userId: newUserId,
+      fullName: newUser.fullName,
+      email: newUser.email,
+      phone: newUser.phone,
+      accountStatus: 'Active',
+      preferredCity: 'Bengaluru',
+      favoriteProviderIds: [],
+      totalBookings: 0,
+      createdAt: '2026-11-04',
+    };
+    setData((prev) => ({
+      ...prev,
+      users: [...prev.users, newUser],
+      customers: [...prev.customers, newCustomer],
+    }));
+    sessionStorage.setItem('hs_active_user', JSON.stringify(newUser));
+    setCurrentUser(newUser);
+    showToast('Customer account registered & saved to persistent storage!', 'success');
+    return { success: true, user: newUser, redirectPath: '/customer/dashboard' };
   };
 
   const registerProvider = async ({
@@ -321,90 +328,120 @@ export function PlatformProvider({ children }) {
     bio,
   }) => {
     const normalizedEmail = email.trim().toLowerCase();
-    try {
-      const res = await apiClient.post('/auth/register/provider', {
-        business_name: businessName,
-        owner_name: ownerName,
-        email: normalizedEmail,
-        phone,
-        password: password || 'Provider@123',
-        experience_years: Number(experienceYears) || 3,
-        city: city || 'Bengaluru',
-        postal_code: postalCode || '560038',
-        kyc_document_name: kycDocumentName || 'KYC_Identity_And_License.pdf',
-        selected_category_ids: selectedCategoryIds,
-        bio,
-      });
-      sessionStorage.setItem('hs_access_token', res.data.access_token);
-      sessionStorage.setItem('hs_refresh_token', res.data.refresh_token);
-      sessionStorage.setItem('hs_active_user', JSON.stringify(res.data.user));
-      setCurrentUser(res.data.user);
-      await syncWithBackend();
-      showToast('Provider application saved to database! Pending Admin KYC approval.', 'success');
-      return { success: true, user: res.data.user, redirectPath: '/provider/dashboard' };
-    } catch (err) {
-      if (err.response) {
-        return {
-          success: false,
-          error: err.response.data?.detail || 'Provider registration failed.',
-        };
+    if (isBackendConnected) {
+      try {
+        const res = await apiClient.post('/auth/register/provider', {
+          business_name: businessName,
+          owner_name: ownerName,
+          email: normalizedEmail,
+          phone,
+          password: password || 'Provider@123',
+          experience_years: Number(experienceYears) || 3,
+          city: city || 'Bengaluru',
+          postal_code: postalCode || '560038',
+          kyc_document_name: kycDocumentName || 'KYC_Identity_And_License.pdf',
+          selected_category_ids: selectedCategoryIds,
+          bio,
+        });
+        sessionStorage.setItem('hs_access_token', res.data.access_token);
+        sessionStorage.setItem('hs_refresh_token', res.data.refresh_token);
+        sessionStorage.setItem('hs_active_user', JSON.stringify(res.data.user));
+        setCurrentUser(res.data.user);
+        await syncWithBackend();
+        showToast('Provider application saved to database! Pending Admin KYC approval.', 'success');
+        return { success: true, user: res.data.user, redirectPath: '/provider/dashboard' };
+      } catch (err) {
+        if (err.response) {
+          return {
+            success: false,
+            error: err.response.data?.detail || 'Provider registration failed.',
+          };
+        }
       }
-      const newUserId = Math.max(...data.users.map((u) => u.id), 10) + 1;
-      const newProvId = Math.max(...data.providers.map((p) => p.id), 10) + 1;
-      const newUser = {
-        id: newUserId,
-        fullName: ownerName.trim(),
-        email: normalizedEmail,
-        phone,
-        password: password || 'Provider@123',
-        role: 'service_provider',
-        isActive: true,
-        isVerified: false,
-        createdAt: new Date().toISOString(),
-      };
-      const newProvider = {
-        id: newProvId,
-        userId: newUserId,
-        businessName: businessName.trim(),
-        ownerName: ownerName.trim(),
-        email: normalizedEmail,
-        phone,
-        bio: bio || 'Professional residential service partner.',
-        experienceYears: Number(experienceYears) || 3,
-        verificationStatus: 'Pending',
-        kycDocumentName: kycDocumentName || 'KYC_Identity_And_License.pdf',
-        subscriptionPlanId: 1,
-        averageRating: 0,
-        totalReviews: 0,
-        completedJobs: 0,
-        workingHours: 'Mon - Sun: 08:00 AM - 08:00 PM',
-        serviceAreas: [
-          {
-            id: Date.now(),
-            city: city || 'Bengaluru',
-            areaName: city || 'Bengaluru',
-            postalCode: postalCode || '560038',
-          },
-        ],
-        offeredServices: [],
-      };
-      setData((prev) => ({
-        ...prev,
-        users: [...prev.users, newUser],
-        providers: [...prev.providers, newProvider],
-      }));
-      sessionStorage.setItem('hs_active_user', JSON.stringify(newUser));
-      setCurrentUser(newUser);
-      showToast('Provider application saved! Pending Super Admin KYC approval.', 'success');
-      return { success: true, user: newUser, redirectPath: '/provider/dashboard' };
     }
+
+    if (data.users.some((u) => u.email.toLowerCase() === normalizedEmail)) {
+      return { success: false, error: 'An account with this email already exists.' };
+    }
+    const newUserId = Math.max(...data.users.map((u) => u.id), 10) + 1;
+    const newProvId = Math.max(...data.providers.map((p) => p.id), 10) + 1;
+    const selectedCats = (selectedCategoryIds || [1]).map(Number);
+    const matchingServices = data.services.filter((s) => selectedCats.includes(Number(s.categoryId)));
+    const newUser = {
+      id: newUserId,
+      fullName: ownerName.trim(),
+      email: normalizedEmail,
+      phone,
+      password: password || 'Provider@123',
+      role: 'service_provider',
+      isActive: true,
+      isVerified: false,
+      createdAt: new Date().toISOString(),
+    };
+    const newProvider = {
+      id: newProvId,
+      userId: newUserId,
+      businessName: businessName.trim(),
+      ownerName: ownerName.trim(),
+      email: normalizedEmail,
+      phone,
+      bio: bio || 'Professional residential service partner.',
+      experienceYears: Number(experienceYears) || 3,
+      verificationStatus: 'Pending',
+      kycDocumentName: kycDocumentName || 'KYC_Identity_And_License.pdf',
+      subscriptionPlanId: 1,
+      subscriptionPlanName: 'Standard Partner',
+      commissionPercentage: 15.0,
+      averageRating: 0,
+      totalReviews: 0,
+      completedJobs: 0,
+      workingHours: 'Mon - Sun: 08:00 AM - 08:00 PM',
+      availableSlots: ['09:00', '11:00', '14:00', '16:00'],
+      serviceAreas: [
+        {
+          id: Date.now(),
+          city: city || 'Bengaluru',
+          areaName: city || 'Bengaluru',
+          postalCode: postalCode || '560038',
+        },
+      ],
+      offeredServices: matchingServices.map((s) => ({
+        serviceId: s.id,
+        customPrice: s.basePrice,
+        customDescription: `Certified ${s.name} by ${businessName.trim()}`,
+      })),
+    };
+    setData((prev) => ({
+      ...prev,
+      users: [...prev.users, newUser],
+      providers: [...prev.providers, newProvider],
+      notifications: [
+        {
+          id: Date.now(),
+          userId: 1,
+          role: 'super_admin',
+          title: 'New Provider KYC Verification Required',
+          message: `${newProvider.businessName} (${newProvider.ownerName}) submitted KYC documents.`,
+          type: 'ADMIN_ALERT',
+          isRead: false,
+          createdAt: 'Just now',
+        },
+        ...(prev.notifications || []),
+      ],
+    }));
+    sessionStorage.setItem('hs_active_user', JSON.stringify(newUser));
+    setCurrentUser(newUser);
+    showToast('Provider application saved! Pending Super Admin KYC approval.', 'success');
+    return { success: true, user: newUser, redirectPath: '/provider/dashboard' };
   };
 
   const logout = async () => {
-    try {
-      await apiClient.post('/auth/logout');
-    } catch {
-      // Ignore logout network error
+    if (isBackendConnected) {
+      try {
+        await apiClient.post('/auth/logout');
+      } catch {
+        // Ignore logout network error
+      }
     }
     sessionStorage.removeItem('hs_access_token');
     sessionStorage.removeItem('hs_refresh_token');
@@ -695,7 +732,7 @@ export function PlatformProvider({ children }) {
           booking_id: Number(bookingId),
           scenario,
         })
-        .catch(() => {});
+        .catch(() => { });
     }
 
     const orderId = target.razorpayOrderId || `order_RzpTest_${target.id}`;
@@ -937,9 +974,9 @@ export function PlatformProvider({ children }) {
       }
     }
 
-    setData((prev) => ({
-      ...prev,
-      bookings: prev.bookings.map((b) => {
+    setData((prev) => {
+      const targetBooking = prev.bookings.find((b) => Number(b.id) === Number(bookingId));
+      const updatedBookings = prev.bookings.map((b) => {
         if (Number(b.id) !== Number(bookingId)) return b;
         if (action === 'ARRIVE_START') {
           return {
@@ -967,10 +1004,56 @@ export function PlatformProvider({ children }) {
           paymentStatus: 'Paid',
           paidAmount: b.totalAmount,
           pendingAmount: 0,
+          invoiceNumber: b.invoiceNumber || `INV-2026-0${b.id}`,
           images: newImages,
         };
-      }),
-    }));
+      });
+
+      let updatedEarnings = prev.providerEarnings || [];
+      let updatedTechnicians = prev.technicians || [];
+
+      if (action === 'COMPLETE' && targetBooking) {
+        const provider = (prev.providers || []).find(
+          (p) => Number(p.id) === Number(targetBooking.providerId)
+        );
+        const commPct = provider?.commissionPercentage || 10.0;
+        const grossAmount = Number(targetBooking.totalAmount || 0);
+        const commissionDeducted = Number(((grossAmount * commPct) / 100).toFixed(2));
+        const netEarning = Number((grossAmount - commissionDeducted).toFixed(2));
+        const alreadySettled = updatedEarnings.some(
+          (e) => Number(e.bookingId) === Number(bookingId)
+        );
+        if (!alreadySettled) {
+          updatedEarnings = [
+            {
+              id: Date.now(),
+              providerId: targetBooking.providerId,
+              bookingId: targetBooking.id,
+              serviceTitle: targetBooking.serviceTitle,
+              grossAmount,
+              commissionPercentage: commPct,
+              commissionDeducted,
+              netEarning,
+              settlementStatus: 'Settled',
+              settledAt: new Date().toISOString().slice(0, 10),
+            },
+            ...updatedEarnings,
+          ];
+        }
+        updatedTechnicians = updatedTechnicians.map((t) =>
+          Number(t.id) === Number(targetBooking.technicianId)
+            ? { ...t, completedJobsCount: (t.completedJobsCount || 0) + 1 }
+            : t
+        );
+      }
+
+      return {
+        ...prev,
+        bookings: updatedBookings,
+        providerEarnings: updatedEarnings,
+        technicians: updatedTechnicians,
+      };
+    });
     showToast(
       action === 'ARRIVE_START'
         ? 'Arrival timestamp recorded & job is now In Progress!'
@@ -1042,17 +1125,26 @@ export function PlatformProvider({ children }) {
   };
 
   const toggleFavoriteProvider = async (providerId) => {
+    const provIdNum = Number(providerId);
     if (isBackendConnected) {
       try {
-        await apiClient.post(`/customers/me/favorites/${providerId}`);
-        await syncWithBackend();
-        showToast('Updated favorite service providers.', 'info');
-        return;
-      } catch (err) {
-        showToast(err.response?.data?.detail || 'Could not update favorites.', 'error');
-        return;
+        await apiClient.post(`/customers/me/favorites/${provIdNum}`);
+      } catch {
+        // Fallback to local state update
       }
     }
+    setData((prev) => ({
+      ...prev,
+      customers: prev.customers.map((c) => {
+        if (Number(c.id) !== Number(currentCustomer.id)) return c;
+        const favs = c.favoriteProviderIds || [];
+        const exists = favs.includes(provIdNum);
+        return {
+          ...c,
+          favoriteProviderIds: exists ? favs.filter((id) => id !== provIdNum) : [...favs, provIdNum],
+        };
+      }),
+    }));
     showToast('Updated favorite service providers.', 'info');
   };
 
@@ -1286,6 +1378,10 @@ export function PlatformProvider({ children }) {
       description: svcData.description,
       basePrice: Number(svcData.basePrice),
       durationMinutes: Number(svcData.durationMinutes) || 60,
+      imageUrl: '/assets/services/ac-foam-service.jpg',
+      rating: 4.9,
+      reviewsCount: 18,
+      inclusions: ['Certified technician inspection', '30-day service warranty', 'Digital GST invoice'],
       isActive: true,
     };
     setData((prev) => ({
@@ -1411,7 +1507,7 @@ export function PlatformProvider({ children }) {
   const resetDemoDatabase = () => {
     localStorage.removeItem(PERSISTENT_DB_KEY);
     if (isBackendConnected) {
-      apiClient.post('/reset').catch(() => {});
+      apiClient.post('/reset').catch(() => { });
     }
     setData({ ...INITIAL_MOCK_DATA, isMockMode: false });
     showToast('Database reset to initial canonical seed state.', 'info');
