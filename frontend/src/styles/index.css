@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @layer base {
+
   html,
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -15,24 +16,23 @@
    as Chromium 121+ disables ::-webkit-scrollbar when those properties exist.
 ============================================================================ */
 
-/* Global Page Scrollbar */
+/* Global Page & Card Scrollbar (Transparent Track so it adapts to both Light & Dark cards) */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #6366f1 0%, #4338ca 100%);
   border-radius: 9999px;
-  border: 2px solid #0f172a;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #818cf8;
+  background: #4f46e5;
 }
 
 /* Dark Enterprise Sidebar Theme Scrollbar */
@@ -81,6 +81,7 @@
     scrollbar-width: thin;
     scrollbar-color: #4f46e5 #020617;
   }
+
   .workspace-theme-scroll {
     scrollbar-width: thin;
     scrollbar-color: #4f46e5 #f1f5f9;
@@ -91,15 +92,19 @@
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
   }
+
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
   }
+
   .btn-danger {
     @apply inline-flex items-center justify-center gap-2 rounded-lg bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
   }
+
   .input-field {
     @apply block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 shadow-sm transition focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/20 disabled:bg-slate-100;
   }
+
   .card-surface {
     @apply rounded-xl border border-slate-200/80 bg-white shadow-sm;
   }
@@ -109,6 +114,7 @@
   0% {
     transform: scale(1) translate3d(0, 0, 0);
   }
+
   100% {
     transform: scale(1.09) translate3d(-1%, -1%, 0);
   }
@@ -119,6 +125,7 @@
     opacity: 0;
     transform: translateY(14px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -126,10 +133,12 @@
 }
 
 @keyframes floatSlow {
+
   0%,
   100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-6px);
   }
@@ -139,6 +148,7 @@
   0% {
     width: 0%;
   }
+
   100% {
     width: 100%;
   }

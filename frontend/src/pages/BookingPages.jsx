@@ -1028,7 +1028,7 @@ export function BookingTrackingPage() {
                 <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   Recent Webhook Callback Log:
                 </p>
-                <div className="max-h-48 overflow-y-auto space-y-2">
+                <div className="max-h-48 overflow-y-auto pr-1.5 space-y-2">
                   {booking.webhookLogs.map((wh) => (
                     <div
                       key={wh.id}
